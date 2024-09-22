@@ -9,6 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="bin\Debug\net8.0-windows\Database.db" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.8" />
+    <PackageReference Include="SQLite" Version="3.13.0" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.10" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\bot.png" />
     <None Remove="Resources\Character_AbstractMirror_Rogue.png" />
     <None Remove="Resources\Character_AccentWall.png" />
