@@ -1,114 +1,72 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.IO;
-using System.Linq;
-using SQLitePCL;
+using Microsoft.Data.Sqlite;
 
 namespace SQLiteViewer
 {
     public partial class MainWindow : Window
     {
-        public ObservableCollection<AA_BetterReplays> Replays { get; set; }
-        private ObservableCollection<AA_BetterReplays> originalReplays;
-        private readonly DatabaseManager dbManager;
+        private ObservableCollection<AA_DistinctRoster> _originalData;
 
         public MainWindow()
         {
             InitializeComponent();
-
-            // Initialize SQLitePCL.Batteries
-            Batteries_V2.Init();
-
-            string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.db");
-            dbManager = new DatabaseManager(dbPath);
-            LoadDataFromDatabase();
-            DataContext = this;
+            LoadData();
+            FilterControl.OriginalData = _originalData;
+            FilterControl.DataFiltered += FilterControl_DataFiltered;
         }
 
-        private void LoadDataFromDatabase()
+        private void LoadData()
         {
-            originalReplays = dbManager.GetAllReplays();
-            Replays = new ObservableCollection<AA_BetterReplays>(originalReplays);
-            ReplaysDataGrid.ItemsSource = Replays;
-        }
+            _originalData = new ObservableCollection<AA_DistinctRoster>();
 
-        private void ResetFilters_Click(object sender, RoutedEventArgs e)
-        {
-            StartDatePicker.SelectedDate = null;
-            EndDatePicker.SelectedDate = null;
-            PlaylistComboBox.SelectedIndex = 0;
-            MinKillsTextBox.Text = "";
-            MaxKillsTextBox.Text = "";
-            SeasonTextBox.Text = "";
-            PlacementTextBox.Text = "";
-
-            Replays = new ObservableCollection<AA_BetterReplays>(originalReplays);
-            ReplaysDataGrid.ItemsSource = Replays;
-        }
-
-        private void ApplyFilters()
-        {
-            var filteredReplays = originalReplays.AsEnumerable();
-
-            // Date Range Filter
-            if (StartDatePicker.SelectedDate.HasValue && EndDatePicker.SelectedDate.HasValue)
+            string connectionString = "Data Source=Da" +
+                "tabase.db";
+            using (var connection = new SqliteConnection(connectionString))
             {
-                filteredReplays = filteredReplays.Where(r => r.ReplayDate >= StartDatePicker.SelectedDate.Value && r.ReplayDate <= EndDatePicker.SelectedDate.Value);
+                connection.Open();
+
+                string sql = "SELECT * FROM AA_DistinctRoster";
+                using (var command = new SqliteCommand(sql, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            _originalData.Add(new AA_DistinctRoster
+                            {
+                                Num = reader.GetInt32(reader.GetOrdinal("Num")),
+                                Date = reader.GetDateTime(reader.GetOrdinal("Date")),
+                                Playlist = reader.GetString(reader.GetOrdinal("Playlist")),
+                                PlayerId = reader.GetString(reader.GetOrdinal("PlayerId")),
+                                DisplayName = reader.GetString(reader.GetOrdinal("DisplayName")),
+                                Lvl = reader.GetInt32(reader.GetOrdinal("Lvl")),
+                                Place = reader.GetInt32(reader.GetOrdinal("Place")),
+                                Anon = reader.GetInt32(reader.GetOrdinal("Anon")),
+                                Platform = reader.GetString(reader.GetOrdinal("Platform")),
+                                Team = reader.GetInt32(reader.GetOrdinal("Team")),
+                                Kills = reader.IsDBNull(reader.GetOrdinal("Kills")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("Kills")),
+                                BotKills = reader.IsDBNull(reader.GetOrdinal("BotKills")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("BotKills")),
+                                Crowns = reader.GetInt32(reader.GetOrdinal("Crowns")),
+                                TeamMate = reader.GetString(reader.GetOrdinal("TeamMate")),
+                                Skin = reader.GetString(reader.GetOrdinal("Skin")),
+                                Count = reader.GetInt32(reader.GetOrdinal("Count")),
+                                MetK = reader.GetString(reader.GetOrdinal("MetK")),
+                                MetD = reader.GetString(reader.GetOrdinal("MetD")),
+                                Season = reader.GetString(reader.GetOrdinal("Season"))
+                            });
+                        }
+                    }
+                }
             }
 
-            // Playlist Filter
-            if (PlaylistComboBox.SelectedItem is ComboBoxItem selectedPlaylist && selectedPlaylist.Content.ToString() != "All")
-            {
-                filteredReplays = filteredReplays.Where(r => r.Playlist == selectedPlaylist.Content.ToString());
-            }
-
-            // Kills Range Filter
-            if (int.TryParse(MinKillsTextBox.Text, out int minKills) && int.TryParse(MaxKillsTextBox.Text, out int maxKills))
-            {
-                filteredReplays = filteredReplays.Where(r => r.Kills >= minKills && r.Kills <= maxKills);
-            }
-
-            // Season Filter
-            if (double.TryParse(SeasonTextBox.Text, out double season))
-            {
-                filteredReplays = filteredReplays.Where(r => r.Season == season);
-            }
-
-            // Placement Filter
-            if (int.TryParse(PlacementTextBox.Text, out int placement))
-            {
-                filteredReplays = filteredReplays.Where(r => r.Placement == placement);
-            }
-
-            Replays = new ObservableCollection<AA_BetterReplays>(filteredReplays);
-            ReplaysDataGrid.ItemsSource = Replays;
+            ResultsDataGrid.ItemsSource = _originalData;
         }
 
-        private void DateFilter_Changed(object sender, SelectionChangedEventArgs e)
+        private void FilterControl_DataFiltered(object sender, ObservableCollection<AA_DistinctRoster> filteredData)
         {
-            ApplyFilters();
-        }
-
-        private void PlaylistFilter_Changed(object sender, SelectionChangedEventArgs e)
-        {
-            ApplyFilters();
-        }
-
-        private void KillsFilter_Changed(object sender, TextChangedEventArgs e)
-        {
-            ApplyFilters();
-        }
-
-        private void SeasonFilter_Changed(object sender, TextChangedEventArgs e)
-        {
-            ApplyFilters();
-        }
-
-        private void PlacementFilter_Changed(object sender, TextChangedEventArgs e)
-        {
-            ApplyFilters();
+            ResultsDataGrid.ItemsSource = filteredData;
         }
     }
 }

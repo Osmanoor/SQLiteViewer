@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="SQLiteViewer.AA_DistinctRosterFilterControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SQLiteViewer"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <GroupBox Header="Level Filter">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="MinLvlTextBox" Width="50" Margin="5"/>
+                <TextBox x:Name="MaxLvlTextBox" Width="50" Margin="5"/>
+                <Button Content="Apply" Click="ApplyLvlFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Place Filter">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="MinPlaceTextBox" Width="50" Margin="5"/>
+                <TextBox x:Name="MaxPlaceTextBox" Width="50" Margin="5"/>
+                <Button Content="Apply" Click="ApplyPlaceFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Platform Filter">
+            <StackPanel Orientation="Horizontal">
+                <ComboBox x:Name="PlatformComboBox" Width="100" Margin="5">
+                    <ComboBoxItem>PS5</ComboBoxItem>
+                    <ComboBoxItem>PSN</ComboBoxItem>
+                    <ComboBoxItem>WIN</ComboBoxItem>
+                    <ComboBoxItem>XBL</ComboBoxItem>
+                    <ComboBoxItem>XSX</ComboBoxItem>
+                </ComboBox>
+                <Button Content="Apply" Click="ApplyPlatformFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Kills Filter">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="MinKillsTextBox" Width="50" Margin="5"/>
+                <Button Content="Apply" Click="ApplyKillsFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Team Filter">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="TeamTextBox" Width="50" Margin="5"/>
+                <Button Content="Apply" Click="ApplyTeamFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <Button Content="Reset Filters" Click="ResetFilters_Click" Margin="5"/>
+    </StackPanel>
+</UserControl>
