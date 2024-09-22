@@ -1,0 +1,47 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="BackgroundColor">#0a070e</Color>
+    <Color x:Key="foregroundColor">#ffffff</Color>
+    <Color x:Key="BorderColor">#222127</Color>
+    <Color x:Key="ShadowColor">#151519</Color>
+    <Color x:Key="ShadowBorderColor">#141417</Color>
+
+    <Color x:Key="PrimaryColor">#2d9aff</Color>
+    <Color x:Key="SuccessColor">#01cbb1</Color>
+    <Color x:Key="DangerColor">#fcc841</Color>
+    <Color x:Key="ErrorColor">#c5432d</Color>
+
+    <Color x:Key="PrimaryBackgroundColor">#1c3e6c</Color>
+    <Color x:Key="SuccessBackgroundColor">#02554d</Color>
+    <Color x:Key="DangerBackgroundColor">#664526</Color>
+    <Color x:Key="ErrorBackgroundColor">#40211f</Color>
+
+    <Color x:Key="PrimaryBorderColor">#2a93ef</Color>
+    <Color x:Key="SuccessBorderColor">#17eecb</Color>
+    <Color x:Key="DangerBorderColor">#fcc841</Color>
+    <Color x:Key="ErrorBorderColor">#c5432d</Color>
+
+    <SolidColorBrush x:Key="Background" Color="{StaticResource BackgroundColor}" />
+    <SolidColorBrush x:Key="foreground" Color="{StaticResource foregroundColor}" />
+    <SolidColorBrush x:Key="Border" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="Shadow" Color="{StaticResource ShadowColor}" />
+    <SolidColorBrush x:Key="ShadowBorder" Color="{StaticResource ShadowBorderColor}" />
+
+    <SolidColorBrush x:Key="Primary" Color="{StaticResource PrimaryColor}" />
+    <SolidColorBrush x:Key="Success" Color="{StaticResource SuccessColor}" />
+    <SolidColorBrush x:Key="Danger" Color="{StaticResource DangerColor}" />
+    <SolidColorBrush x:Key="Error" Color="{StaticResource ErrorColor}" />
+
+    <SolidColorBrush x:Key="PrimaryBackground" Color="{StaticResource PrimaryBackgroundColor}" />
+    <SolidColorBrush x:Key="SuccessBackground" Color="{StaticResource SuccessBackgroundColor}" />
+    <SolidColorBrush x:Key="DangerBackground" Color="{StaticResource DangerBackgroundColor}" />
+    <SolidColorBrush x:Key="ErrorBackground" Color="{StaticResource ErrorBackgroundColor}" />
+
+    <SolidColorBrush x:Key="PrimaryBorder" Color="{StaticResource PrimaryBorderColor}" />
+    <SolidColorBrush x:Key="SuccessBorder" Color="{StaticResource SuccessBorderColor}" />
+    <SolidColorBrush x:Key="DangerBorder" Color="{StaticResource DangerBorderColor}" />
+    <SolidColorBrush x:Key="ErrorBorder" Color="{StaticResource ErrorBorderColor}" />
+
+    <SolidColorBrush x:Key="IconBackground" Color="#161618" />
+
+</ResourceDictionary>

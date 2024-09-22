@@ -1,12 +1,144 @@
-﻿<Window x:Class="SQLiteViewer.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SQLiteViewer"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+﻿<Window
+    x:Class="SQLiteViewer.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SQLiteViewer"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:templates="clr-namespace:SQLiteViewer.Templates"
+    Title="SQLite Viewer"
+    Width="1080"
+    Height="1080"
+    MinWidth="1080"
+    MinHeight="700"
+    AllowsTransparency="True"
+    Background="Transparent"
+    Loaded="Window_Loaded"
+    StateChanged="Window_StateChanged"
+    Style="{StaticResource MaterialDesignWindow}"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d">
+    <Border
+        x:Name="MainBorder"
+        Background="{StaticResource Background}"
+        CornerRadius="50"
+        SizeChanged="MainBorder_SizeChanged">
+        <Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="IconGrid">
+                    <Image
+                        Width="42"
+                        Height="36"
+                        Margin="25"
+                        VerticalAlignment="Top"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Source="pack://application:,,,/Resources/bot.png" />
+                    <StackPanel Margin="0,100,0,0" VerticalAlignment="Top">
+                        <templates:IconCard
+                            x:Name="homeBtn"
+                            ImageSource="pack://application:,,,/Resources/home.png"
+                            Navigate="homeBtn_Navigate" />
+                        <templates:IconCard
+                            x:Name="featureBtn"
+                            ImageSource="pack://application:,,,/Resources/rocket.png"
+                            Navigate="featureBtn_Navigate" />
+                        <templates:IconCard
+                            x:Name="backupBtn"
+                            ImageSource="pack://application:,,,/Resources/screen.png"
+                            Navigate="backupBtn_Navigate" />
+                        <templates:IconCard
+                            x:Name="settingsBtn"
+                            ImageSource="pack://application:,,,/Resources/settings.png"
+                            Navigate="settingsBtn_Navigate" />
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid x:Name="HeaderGrid">
+                        <Border
+                            x:Name="DraggableGrid"
+                            Width="auto"
+                            Height="auto"
+                            Margin="0,0,50,0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Background="{StaticResource Background}"
+                            Cursor="SizeAll"
+                            MouseLeftButtonDown="DraggableGrid_MouseLeftButtonDown" />
+                        <StackPanel
+                            Margin="35,10"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Button
+                                Width="18"
+                                Height="18"
+                                Margin="7"
+                                VerticalAlignment="Center"
+                                Click="Button_Click_8"
+                                Style="{StaticResource StarButtonStyle}">
+                                <materialDesign:PackIcon
+                                    Width="18"
+                                    Height="18"
+                                    Foreground="{StaticResource foreground}"
+                                    Kind="WindowMinimize" />
+                            </Button>
+                            <Button
+                                Width="18"
+                                Height="18"
+                                Margin="7"
+                                VerticalAlignment="Center"
+                                Click="Button_Click_7"
+                                Style="{StaticResource StarButtonStyle}">
+                                <materialDesign:PackIcon
+                                    Width="18"
+                                    Height="18"
+                                    Foreground="{StaticResource foreground}"
+                                    Kind="WindowMaximize" />
+                            </Button>
+                            <Button
+                                Width="18"
+                                Height="18"
+                                Margin="7"
+                                VerticalAlignment="Center"
+                                Click="Button_Click_6"
+                                Style="{StaticResource StarButtonStyle}">
+                                <materialDesign:PackIcon
+                                    Width="18"
+                                    Height="18"
+                                    Foreground="{StaticResource foreground}"
+                                    Kind="WindowClose" />
+                            </Button>
+                        </StackPanel>
 
-    </Grid>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <ScrollViewer
+                            x:Name="scrollViewer"
+                            Grid.Row="1"
+                            Width="auto"
+                            Height="auto"
+                            Style="{StaticResource ScrollStyle}" />
+                    </Grid>
+                </Grid>
+            </Grid>
+            <materialDesign:DialogHost
+                x:Name="FilterDialogHost"
+                CloseOnClickAway="True"
+                DialogBackground="Transparent"
+                DialogTheme="Dark"
+                Identifier="FilterDialogHost" />
+        </Grid>
+    </Border>
+
+
 </Window>

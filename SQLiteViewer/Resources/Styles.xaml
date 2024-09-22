@@ -1,0 +1,298 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
+
+    <Style x:Key="TransitioningUserControl" TargetType="UserControl">
+        <Setter Property="Opacity" Value="0" />
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="UserControl.Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation
+                            Storyboard.TargetProperty="Opacity"
+                            From="0"
+                            To="1"
+                            Duration="0:0:1" />
+                        <ThicknessAnimation
+                            Storyboard.TargetProperty="Margin"
+                            From="100,0,0,0"
+                            To="0"
+                            Duration="0:0:1" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="WrapPanel">
+        <Setter Property="Margin" Value="30,0" />
+    </Style>
+    <!--  Image  -->
+    <Style x:Key="ImageStyle" TargetType="Image">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
+    </Style>
+
+    <!--  Button Style  -->
+    <Style
+        x:Key="PrimaryButtonStyle"
+        BasedOn="{StaticResource MaterialDesignRaisedButton}"
+        TargetType="Button">
+        <Setter Property="Width" Value="90" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Background" Value="#FCC841" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="15" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+
+    <Style x:Key="IconStyle" TargetType="materialDesign:PackIcon">
+        <Setter Property="Width" Value="23" />
+        <Setter Property="Height" Value="23" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+    </Style>
+    <!--  New Button Style  -->
+    <Style
+        x:Key="OutLineButtonStyle"
+        BasedOn="{StaticResource MaterialDesignRaisedButton}"
+        TargetType="Button">
+        <Setter Property="Width" Value="90" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="#222127" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="Foreground" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="15" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+    <Style
+        x:Key="StarButtonStyle"
+        BasedOn="{StaticResource MaterialDesignRaisedButton}"
+        TargetType="Button">
+        <Setter Property="Width" Value="25" />
+        <Setter Property="Height" Value="25" />
+        <Setter Property="Margin" Value="20" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="25" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!--  Ellipse Style  -->
+    <Style x:Key="CustomEllipseStyle" TargetType="Ellipse">
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Fill" Value="#5AC550" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <Style
+        x:Key="ToggleStyle"
+        BasedOn="{StaticResource MaterialDesignSwitchToggleButton}"
+        TargetType="ToggleButton">
+        <Setter Property="Width" Value="50" />
+        <!--<Setter Property="Height" Value="26"/>-->
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="materialDesign:ToggleButtonAssist.SwitchTrackOnBackground" Value="{StaticResource Success}" />
+        <Setter Property="Background" Value="{StaticResource foreground}" />
+        <Setter Property="materialDesign:ToggleButtonAssist.SwitchTrackOffBackground" Value="#373735" />
+        <Setter Property="materialDesign:ToggleButtonAssist.OnContent" Value="" />
+    </Style>
+    <Style
+        x:Key="ComboStyle"
+        BasedOn="{StaticResource MaterialDesignOutlinedComboBox}"
+        TargetType="ComboBox">
+        <Setter Property="Width" Value="auto" />
+        <Setter Property="Height" Value="auto" />
+        <Setter Property="MinWidth" Value="80" />
+        <Setter Property="MinHeight" Value="50" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="materialDesign:ThemeAssist.Theme" Value="Dark" />
+    </Style>
+    <!--  H1 Style  -->
+    <Style x:Key="H0Style" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource GilroyFont}" />
+        <Setter Property="FontWeight" Value="ExtraBold" />
+        <Setter Property="FontSize" Value="56" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Visibility" Value="Collapsed" />
+    </Style>
+    <Style x:Key="H1Style" TargetType="TextBlock">
+        <Setter Property="Width" Value="auto" />
+        <Setter Property="FontFamily" Value="{DynamicResource GilroyFont}" />
+        <Setter Property="FontWeight" Value="ExtraBold" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Text" Value="Welcome back, Aymen" />
+    </Style>
+
+    <Style
+        x:Key="TextBoxStyle"
+        BasedOn="{StaticResource MaterialDesignOutlinedTextBox}"
+        TargetType="TextBox">
+        <Setter Property="Width" Value="200" />
+        <Setter Property="Height" Value="80" />
+        <Setter Property="BorderThickness" Value="3" />
+    </Style>
+    <!--  H2 Style  -->
+    <Style x:Key="H2Style" TargetType="TextBlock">
+        <Setter Property="Width" Value="auto" />
+        <Setter Property="FontFamily" Value="{DynamicResource GilroyFont}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="Text" Value="Optimize Now" />
+    </Style>
+
+    <Style
+        x:Key="ScrollStyle"
+        BasedOn="{StaticResource MaterialDesignScrollViewer}"
+        TargetType="ScrollViewer">
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="Padding" Value="0,0,0,20" />
+    </Style>
+    <Style BasedOn="{StaticResource MaterialDesignScrollBar}" TargetType="ScrollBar">
+        <Setter Property="materialDesign:ScrollBarAssist.ButtonsVisibility" Value="Collapsed" />
+        <Setter Property="materialDesign:ScrollBarAssist.ThumbCornerRadius" Value="5" />
+        <Setter Property="materialDesign:ScrollBarAssist.ThumbWidth" Value="5" />
+        <Setter Property="materialDesign:ScrollBarAssist.ThumbHeight" Value="5" />
+        <Setter Property="materialDesign:ThemeAssist.Theme" Value="Dark" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Width" Value="5" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Margin" Value="0,0,10,0" />
+    </Style>
+
+    <!--  Line 3 Style  -->
+    <Style x:Key="H3Style" TargetType="TextBlock">
+        <Setter Property="Width" Value="auto" />
+        <Setter Property="Height" Value="27" />
+        <Setter Property="FontFamily" Value="{DynamicResource PoppinsFont}" />
+        <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="LineHeight" Value="27" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+        <Setter Property="Opacity" Value="1" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!--  H4 Style  -->
+    <Style x:Key="H4Style" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource PoppinsFont}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="Text" Value="" />
+    </Style>
+    <!--  H5 Style  -->
+    <!--  H5 Style  -->
+    <Style x:Key="H5Style" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource PoppinsFont}" />
+        <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Text" Value="Apr 24, 2024" />
+    </Style>
+
+    <Style x:Key="IconBorderStyle" TargetType="Border">
+        <Setter Property="Width" Value="56" />
+        <Setter Property="Height" Value="56" />
+        <Setter Property="Margin" Value="20,10" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="56" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Background" Value="{StaticResource Border}" />
+    </Style>
+    <!--  Line Style  -->
+    <!--<Style x:Key="LineStyle" TargetType="Rectangle">
+        <Setter Property="Width" Value="933"/>
+        <Setter Property="Height" Value="0"/>
+        <Setter Property="Stroke" Value="#222127"/>
+        <Setter Property="StrokeThickness" Value="2.5"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+    </Style>-->
+
+    <!--  Line Style  -->
+    <!--
+    <Style x:Key="LineStyle2" TargetType="Line">
+        <Setter Property="X1" Value="0"/>
+        <Setter Property="X2" Value="933"/>
+        <Setter Property="Y1" Value="0"/>
+        <Setter Property="Y2" Value="0"/>
+        <Setter Property="Stroke" Value="#222127"/>
+        <Setter Property="StrokeThickness" Value="2.5"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+    </Style>-->
+    <Style x:Key="RoundedLineStyle" TargetType="Border">
+        <Setter Property="Width" Value="auto" />
+        <!--  Adjust the width as needed  -->
+        <Setter Property="Height" Value="2" />
+        <!--  Set the height of the line  -->
+        <Setter Property="Background" Value="#222127" />
+        <Setter Property="CornerRadius" Value="2.5" />
+        <!--  Rounded ends with radius of half the height  -->
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Margin" Value="20,0,20,20" />
+    </Style>
+
+    <Style x:Key="BorderStyle" TargetType="Border">
+        <Setter Property="Width" Value="175" />
+        <Setter Property="Height" Value="205" />
+        <Setter Property="Margin" Value="10" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="CornerRadius" Value="30" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style x:Key="BorderTextStyle" TargetType="Border">
+        <Setter Property="MinWidth" Value="90" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Margin" Value="10" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="15" />
+        <Setter Property="Background" Value="{StaticResource Border}" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+    </Style>
+
+</ResourceDictionary>
