@@ -5,15 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SQLiteViewer"
         mc:Ignorable="d"
-        Title="AA_DistinctRoster Data Viewer" Height="450" Width="800">
+        Title="SQLite Data Viewer" Height="450" Width="800">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <local:AA_DistinctRosterFilterControl x:Name="FilterControl" Grid.Column="0" Margin="10"/>
+        <TabControl Grid.Row="0" SelectionChanged="TabControl_SelectionChanged">
+            <TabItem Header="AA_DistinctRoster">
+                <local:AA_DistinctRosterFilterControl x:Name="AA_DistinctRosterFilterControl"/>
+            </TabItem>
+            <TabItem Header="BetterKillfeed">
+                <local:BetterKillfeedFilterControl x:Name="BetterKillfeedFilterControl"/>
+            </TabItem>
+        </TabControl>
 
-        <DataGrid x:Name="ResultsDataGrid" Grid.Column="1" Margin="10" AutoGenerateColumns="True" IsReadOnly="True"/>
+        <DataGrid x:Name="ResultsDataGrid" Grid.Row="1" Margin="10" AutoGenerateColumns="True" IsReadOnly="True"/>
     </Grid>
 </Window>
