@@ -12,8 +12,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MaterialDesignThemes.Wpf;
+using SQLitePCL;
+using System.IO;
+using SQLiteViewer.Properties;
 
 namespace SQLiteViewer
 {
@@ -23,8 +25,10 @@ namespace SQLiteViewer
     public partial class AA_BetterReplaysUC : UserControl
     {
         MainWindow mainWindow;
-        private ObservableCollection<YourDataModel> _originalDataCollection;
-        private ObservableCollection<YourDataModel> _pagedDataCollection;
+        public ObservableCollection<AA_BetterReplays> Replays { get; set; }
+        public ObservableCollection<AA_BetterReplays> _pagedDataCollection { get; set; }
+        private ObservableCollection<AA_BetterReplays> originalReplays;
+        private readonly DatabaseManager dbManager;
 
         private int _pageSize = 5;
         private int _currentPageIndex = 0;
@@ -34,13 +38,19 @@ namespace SQLiteViewer
         {
             InitializeComponent();
             this.DataContext = this;
-            // Initialize the data
-            refill();
-            // Calculate total pages
-            _totalPages = (_originalDataCollection.Count + _pageSize - 1) / _pageSize;  // Rounded up division
+
+            // Initialize SQLitePCL.Batteries
+            Batteries_V2.Init();
+            string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.db");
+            dbManager = new DatabaseManager(dbPath);
 
             // Initialize paged data collection
-            _pagedDataCollection = new ObservableCollection<YourDataModel>();
+            originalReplays = dbManager.GetAllReplays();
+            Replays = new ObservableCollection<AA_BetterReplays>(originalReplays);
+            _pagedDataCollection = new ObservableCollection<AA_BetterReplays>();
+
+            // Calculate total pages
+            _totalPages = (originalReplays.Count + _pageSize - 1) / _pageSize;  // Rounded up division
 
             // Display the first page
             LoadPage(0);
@@ -53,7 +63,7 @@ namespace SQLiteViewer
                 return;
 
             _pagedDataCollection.Clear();
-            var pageData = _originalDataCollection.Skip(pageIndex * _pageSize).Take(_pageSize).ToList();
+            var pageData = Replays.Skip(pageIndex * _pageSize).Take(_pageSize).ToList();
 
             foreach (var item in pageData)
             {
@@ -98,33 +108,49 @@ namespace SQLiteViewer
 
 
         // Method to apply the filter and refresh the DataGrid
-        private void ApplyFilter(List<YourDataModel> filteredData)
+        private void ApplyFilters()
         {
-            _pagedDataCollection.Clear();
-            foreach (var item in filteredData)
+            var filteredReplays = originalReplays.AsEnumerable();
+
+            // Date Range Filter
+            if (DateFilter.IsSelected)
             {
-                _pagedDataCollection.Add(item);
+                filteredReplays = filteredReplays.Where(r => r.ReplayDate >= Settings.Default.BetterReplayDateFrom && r.ReplayDate <= Settings.Default.BetterReplayDateTo);
             }
+
+            // Playlist Filter
+            if (PlaylistFilter.IsSelected)
+            {
+                filteredReplays = filteredReplays.Where(r => r.Playlist == Settings.Default.BetterReplayPlaylist);
+            }
+
+            // Kills Range Filter
+            if (Kills.IsSelected)
+            {
+                filteredReplays = filteredReplays.Where(r => r.Kills >= Settings.Default.BetterReplayKillsFrom && r.Kills <= Settings.Default.BetterReplayKillsTo);
+            }
+
+            // Season Filter
+            if (SeasonFilter.IsSelected)
+            {
+                filteredReplays = filteredReplays.Where(r => r.Season == Settings.Default.BetterReplaySeason);
+            }
+
+            // Placement Filter
+            if (PlacementFilter.IsSelected)
+            {
+                filteredReplays = filteredReplays.Where(r => r.Placement == Settings.Default.BetterReplayPlacement);
+            }
+
+            Replays = new ObservableCollection<AA_BetterReplays>(filteredReplays);
+            LoadPage(0);
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {
-                refill();
-                if (DateFilter.IsSelected)
-                {
-                    _originalDataCollection = new ObservableCollection<YourDataModel>(_originalDataCollection.Intersect(_originalDataCollection.Where(c => c.StringField == "Test1")));
-                }
-                if (Kills.IsSelected)
-                {
-                    _originalDataCollection = new ObservableCollection<YourDataModel>(_originalDataCollection.Intersect(_originalDataCollection.Where(c => c.IntField == 2)));
-                }
-                if (PlaylistFilter.IsSelected)
-                {
-                    _originalDataCollection = new ObservableCollection<YourDataModel>(_originalDataCollection.Intersect(_originalDataCollection.Where(c => c.BoolField == true)));
-                }
-                LoadPage(0);
+                ApplyFilters();
             }
             catch (Exception ex)
             {
@@ -161,25 +187,6 @@ namespace SQLiteViewer
         private void PlaylistFilter_Unselected(object sender, RoutedEventArgs e)
         {
 
-        }
-
-        private void refill()
-        {
-            _originalDataCollection = new ObservableCollection<YourDataModel>
-            {
-                new YourDataModel { StringField = "Test1", IntField = 1, BoolField = true, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AbstractMirror_Rogue.png" },
-                new YourDataModel { StringField = "Test2", IntField = 2, BoolField = false, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AccentWall.png" },
-                new YourDataModel { StringField = "Test1", IntField = 1, BoolField = true, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AbstractMirror_Rogue.png" },
-                new YourDataModel { StringField = "Test2", IntField = 2, BoolField = false, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AccentWall.png" },
-                new YourDataModel { StringField = "Test1", IntField = 1, BoolField = true, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AbstractMirror_Rogue.png" },
-                new YourDataModel { StringField = "Test2", IntField = 2, BoolField = false, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AccentWall.png" },
-                new YourDataModel { StringField = "Test1", IntField = 1, BoolField = true, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AbstractMirror_Rogue.png" },
-                new YourDataModel { StringField = "Test2", IntField = 2, BoolField = false, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AccentWall.png" },
-                new YourDataModel { StringField = "Test1", IntField = 1, BoolField = true, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AbstractMirror_Rogue.png" },
-                new YourDataModel { StringField = "Test2", IntField = 2, BoolField = false, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AccentWall.png" },
-                new YourDataModel { StringField = "Test1", IntField = 1, BoolField = true, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AbstractMirror_Rogue.png" },
-                new YourDataModel { StringField = "Test2", IntField = 2, BoolField = false, ImageField = "D:\\Projects\\Desktop Development\\SQLiteViewer\\SQLiteViewer\\Resources\\Character_AccentWall.png" },
-            };
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)

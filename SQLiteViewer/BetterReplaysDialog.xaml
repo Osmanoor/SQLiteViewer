@@ -14,27 +14,46 @@
         CornerRadius="20">
         <StackPanel>
             <StackPanel Margin="20" Orientation="Horizontal">
-                <TextBlock Style="{StaticResource H3Style}" Text="Date:" />
+                <TextBlock Style="{StaticResource H3Style}" Text="Date From:" />
                 <DatePicker
-                    x:Name="datePicker"
+                    x:Name="datePickerFrom"
+                    Width="200"
+                    Margin="10"
+                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}" />
+                <TextBlock Style="{StaticResource H3Style}" Text="To:" />
+                <DatePicker
+                    x:Name="datePickerTo"
                     Width="200"
                     Margin="10"
                     Style="{StaticResource MaterialDesignFloatingHintDatePicker}" />
             </StackPanel>
             <StackPanel Margin="20" Orientation="Horizontal">
-                <TextBlock Style="{StaticResource H3Style}" Text="Kills:" />
-                <Slider
-                    x:Name="slider"
-                    Width="200"
-                    Height="40"
-                    Margin="10"
-                    VerticalContentAlignment="Bottom"
-                    Maximum="100"
-                    Minimum="0"
-                    Style="{StaticResource MaterialDesign3.MaterialDesignDiscreteSlider}"
-                    TickFrequency="5"
-                    TickPlacement="BottomRight"
-                    Value="40" />
+                <TextBlock Style="{StaticResource H3Style}" Text="Kills From:" />
+                <TextBox
+                    x:Name="KillsFrom"
+                    Width="100"
+                    Margin="10" />
+                <TextBlock Style="{StaticResource H3Style}" Text="To:" />
+                <TextBox
+                    x:Name="KillsTo"
+                    Width="100"
+                    Margin="10" />
+            </StackPanel>
+            <StackPanel Margin="20" Orientation="Horizontal">
+                <TextBlock Style="{StaticResource H3Style}" Text="Season:" />
+                <TextBox
+                    x:Name="SeasonText"
+                    Width="100"
+                    Margin="10" />
+
+            </StackPanel>
+            <StackPanel Margin="20" Orientation="Horizontal">
+                <TextBlock Style="{StaticResource H3Style}" Text="Placement:" />
+                <TextBox
+                    x:Name="PlacementText"
+                    Width="100"
+                    Margin="10" />
+
             </StackPanel>
             <StackPanel Margin="20" Orientation="Horizontal">
                 <TextBlock Style="{StaticResource H3Style}" Text="Playlist" />

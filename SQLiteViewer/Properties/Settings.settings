@@ -2,14 +2,26 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SQLiteViewer.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="BetterReplayDate" Type="System.DateTime" Scope="User">
+    <Setting Name="BetterReplayDateFrom" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="BetterReplayKills" Type="System.Int32" Scope="User">
+    <Setting Name="BetterReplayKillsFrom" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="BetterReplayPlaylist" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="BetterReplayDateTo" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="BetterReplayKillsTo" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="BetterReplaySeason" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="BetterReplayPlacement" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -131,9 +131,11 @@
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="materialDesign:ThemeAssist.Theme" Value="Dark" />
     </Style>
+
     <!--  H1 Style  -->
+
     <Style x:Key="H0Style" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="{StaticResource GilroyFont}" />
+        <Setter Property="FontFamily" Value="{DynamicResource GilroyFont}" />
         <Setter Property="FontWeight" Value="ExtraBold" />
         <Setter Property="FontSize" Value="56" />
         <Setter Property="Foreground" Value="{StaticResource foreground}" />
@@ -197,6 +199,7 @@
     <Style x:Key="H3Style" TargetType="TextBlock">
         <Setter Property="Width" Value="auto" />
         <Setter Property="Height" Value="27" />
+        <Setter Property="Margin" Value="10,0" />
         <Setter Property="FontFamily" Value="{DynamicResource PoppinsFont}" />
         <Setter Property="FontWeight" Value="Regular" />
         <Setter Property="FontSize" Value="18" />
@@ -293,6 +296,44 @@
         <Setter Property="Background" Value="{StaticResource Border}" />
         <Setter Property="HorizontalAlignment" Value="Right" />
         <Setter Property="VerticalAlignment" Value="Bottom" />
+    </Style>
+
+    <Style
+        x:Key="DataGridStyle"
+        BasedOn="{StaticResource MaterialDesignDataGrid}"
+        TargetType="DataGrid">
+        <Setter Property="Margin" Value="10" />
+        <Setter Property="RowBackground" Value="{StaticResource MaterialDesignDarkSeparatorBackground}" />
+        <Setter Property="AlternatingRowBackground" Value="{StaticResource Success}" />
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+        <Setter Property="Background" Value="{StaticResource Shadow}" />
+        <Setter Property="Foreground" Value="{StaticResource foreground}" />
+        <Setter Property="EnableRowVirtualization" Value="True" />
+        <Setter Property="EnableColumnVirtualization" Value="True" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="RowHeight" Value="40" />
+    </Style>
+    <Style
+        x:Key="HeaderStyle"
+        BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}"
+        TargetType="DataGridColumnHeader">
+        <Setter Property="Height" Value="50" />
+        <Setter Property="Background" Value="{StaticResource PrimaryBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorder}" />
+    </Style>
+    <Style
+        x:Key="RowStyle"
+        BasedOn="{StaticResource MaterialDesignDataGridRow}"
+        TargetType="DataGridRow">
+        <Setter Property="Height" Value="40" />
+    </Style>
+    <Style
+        x:Key="CellStyle"
+        BasedOn="{StaticResource MaterialDesignDataGridCell}"
+        TargetType="DataGridCell">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="IsManipulationEnabled" Value="False" />
     </Style>
 
 </ResourceDictionary>

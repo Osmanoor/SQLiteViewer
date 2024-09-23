@@ -26,16 +26,24 @@ namespace SQLiteViewer
         {
             InitializeComponent();
             var playlist = new List<string>(["Solo","Duo"]);
-            datePicker.SelectedDate = Settings.Default.BetterReplayDate;
-            slider.Value = Settings.Default.BetterReplayKills;
+            datePickerFrom.SelectedDate = Settings.Default.BetterReplayDateFrom;
+            datePickerTo.SelectedDate = Settings.Default.BetterReplayDateTo;
+            KillsFrom.Text = Settings.Default.BetterReplayKillsFrom.ToString();
+            KillsTo.Text = Settings.Default.BetterReplayKillsTo.ToString();
+            SeasonText.Text = Settings.Default.BetterReplaySeason.ToString();
+            PlacementText.Text = Settings.Default.BetterReplayPlacement.ToString();
             comboBox.ItemsSource = playlist;
             comboBox.SelectedValue = Settings.Default.BetterReplayPlaylist;
         }
 
         private void Savebtn_Click(object sender, RoutedEventArgs e)
         {
-            Settings.Default.BetterReplayDate = datePicker.SelectedDate??DateTime.Today;
-            Settings.Default.BetterReplayKills =Convert.ToInt32(slider.Value);
+            Settings.Default.BetterReplayDateFrom = datePickerFrom.SelectedDate??DateTime.Today;
+            Settings.Default.BetterReplayDateTo = datePickerTo.SelectedDate??DateTime.Today.AddDays(1);
+            Settings.Default.BetterReplayKillsFrom =Convert.ToInt32(KillsFrom.Text);
+            Settings.Default.BetterReplayKillsTo =Convert.ToInt32(KillsTo.Text);
+            Settings.Default.BetterReplaySeason = double.Parse(SeasonText.Text);
+            Settings.Default.BetterReplayPlacement = int.Parse(PlacementText.Text);
             Settings.Default.BetterReplayPlaylist = (String)comboBox.SelectedValue??"Solo";
             Settings.Default.Save();
             DialogHost.CloseDialogCommand.Execute(true, null);

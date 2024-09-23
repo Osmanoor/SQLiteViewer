@@ -25,24 +25,24 @@ namespace SQLiteViewer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.DateTime BetterReplayDate {
+        public global::System.DateTime BetterReplayDateFrom {
             get {
-                return ((global::System.DateTime)(this["BetterReplayDate"]));
+                return ((global::System.DateTime)(this["BetterReplayDateFrom"]));
             }
             set {
-                this["BetterReplayDate"] = value;
+                this["BetterReplayDateFrom"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int BetterReplayKills {
+        public int BetterReplayKillsFrom {
             get {
-                return ((int)(this["BetterReplayKills"]));
+                return ((int)(this["BetterReplayKillsFrom"]));
             }
             set {
-                this["BetterReplayKills"] = value;
+                this["BetterReplayKillsFrom"] = value;
             }
         }
         
@@ -55,6 +55,53 @@ namespace SQLiteViewer.Properties {
             }
             set {
                 this["BetterReplayPlaylist"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime BetterReplayDateTo {
+            get {
+                return ((global::System.DateTime)(this["BetterReplayDateTo"]));
+            }
+            set {
+                this["BetterReplayDateTo"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int BetterReplayKillsTo {
+            get {
+                return ((int)(this["BetterReplayKillsTo"]));
+            }
+            set {
+                this["BetterReplayKillsTo"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double BetterReplaySeason {
+            get {
+                return ((double)(this["BetterReplaySeason"]));
+            }
+            set {
+                this["BetterReplaySeason"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int BetterReplayPlacement {
+            get {
+                return ((int)(this["BetterReplayPlacement"]));
+            }
+            set {
+                this["BetterReplayPlacement"] = value;
             }
         }
     }

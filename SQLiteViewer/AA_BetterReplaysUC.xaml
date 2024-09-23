@@ -10,14 +10,19 @@
     d:DesignWidth="800"
     Loaded="UserControl_Loaded"
     mc:Ignorable="d">
-    <StackPanel>
-        <StackPanel Orientation="Horizontal">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
             <!--  Filter Buttons  -->
             <ListBox
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 SelectionChanged="ListBox_SelectionChanged"
-                Style="{StaticResource MaterialDesignFilterChipPrimaryListBox}">
+                Style="{StaticResource MaterialDesignFilterChipSecondaryListBox}">
                 <ListBoxItem
                     x:Name="DateFilter"
                     Content="Date"
@@ -33,7 +38,8 @@
                     Content="Playlist"
                     Selected="PlaylistFilter_Selected"
                     Unselected="PlaylistFilter_Unselected" />
-                <ListBoxItem Content="BotKills" IsEnabled="False" />
+                <ListBoxItem x:Name="SeasonFilter" Content="Season" />
+                <ListBoxItem x:Name="PlacementFilter" Content="Placement" />
             </ListBox>
             <Button
                 Margin="0"
@@ -46,25 +52,44 @@
         <!--  DataGrid for displaying data  -->
         <DataGrid
             x:Name="DataGridView"
-            Height="400"
-            Margin="10"
-            AlternatingRowBackground="{StaticResource Shadow}"
-            AutoGenerateColumns="False"
-            Background="Transparent"
-            Foreground="White"
-            RowBackground="{StaticResource Background}"
-            VerticalScrollBarVisibility="Auto">
+            Grid.Row="1"
+            ColumnHeaderStyle="{StaticResource HeaderStyle}"
+            RowBackground="{StaticResource MaterialDesignDarkSeparatorBackground}"
+            RowStyle="{StaticResource MaterialDesignDataGridRow}"
+            Style="{StaticResource DataGridStyle}">
             <DataGrid.Columns>
-                <!--  String Column  -->
+
+                <DataGridTextColumn Binding="{Binding FileName}" Header="File Name" />
+                <DataGridTextColumn Binding="{Binding ReplayDate}" Header="Replay Date" />
+                <DataGridTextColumn Binding="{Binding Playlist}" Header="Playlist" />
+                <DataGridTextColumn Binding="{Binding Teammates}" Header="Teammates" />
+                <DataGridTextColumn Binding="{Binding GameTime}" Header="Game Time" />
+                <DataGridTextColumn Binding="{Binding Season}" Header="Season" />
+                <DataGridTextColumn Binding="{Binding BotCount}" Header="Bot Count" />
+                <DataGridTextColumn Binding="{Binding Kills}" Header="Kills" />
+                <DataGridTextColumn Binding="{Binding BotKills}" Header="Bot Kills" />
+                <DataGridTextColumn Binding="{Binding Placement}" Header="Placement" />
+                <DataGridTextColumn Binding="{Binding Ended}" Header="Ended" />
+            </DataGrid.Columns>
+            <!--<DataGrid.Columns>
+            -->
+            <!--  String Column  -->
+            <!--
                 <DataGridTextColumn Binding="{Binding StringField}" Header="String Column" />
 
-                <!--  Integer Column  -->
+            -->
+            <!--  Integer Column  -->
+            <!--
                 <DataGridTextColumn Binding="{Binding IntField}" Header="Integer Column" />
 
-                <!--  Boolean Column with a Checkbox  -->
+            -->
+            <!--  Boolean Column with a Checkbox  -->
+            <!--
                 <DataGridCheckBoxColumn Binding="{Binding BoolField}" Header="Boolean Column" />
 
-                <!--  Image Column  -->
+            -->
+            <!--  Image Column  -->
+            <!--
                 <DataGridTemplateColumn Header="Image Column">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -75,11 +100,12 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-            </DataGrid.Columns>
+            </DataGrid.Columns>-->
 
         </DataGrid>
         <!--  Pagination Controls  -->
         <StackPanel
+            Grid.Row="2"
             Margin="10"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
@@ -95,7 +121,10 @@
             <TextBox
                 x:Name="PageNumberTextBox"
                 Width="50"
+                Height="40"
+                Foreground="{StaticResource foreground}"
                 IsReadOnly="True"
+                Style="{StaticResource MaterialDesignTextBox}"
                 TextAlignment="Center" />
             <Button
                 Click="NextPage_Click"
@@ -106,5 +135,5 @@
                 Content="Last"
                 Style="{StaticResource MaterialDesignFlatButton}" />
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </UserControl>
