@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="SQLiteViewer.BetterKillfeedFilterControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SQLiteViewer"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <GroupBox Header="Action Number Filter">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="MinActionNumberTextBox" Width="50" Margin="5"/>
+                <TextBox x:Name="MaxActionNumberTextBox" Width="50" Margin="5"/>
+                <Button Content="Apply" Click="ApplyActionNumberFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Status Filter">
+            <StackPanel Orientation="Horizontal">
+                <ComboBox x:Name="StatusComboBox" Width="100" Margin="5">
+                    <ComboBoxItem>Knocked</ComboBoxItem>
+                    <ComboBoxItem>Killed</ComboBoxItem>
+                    <ComboBoxItem>Revived</ComboBoxItem>
+                </ComboBox>
+                <Button Content="Apply" Click="ApplyStatusFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Rarity Filter">
+            <StackPanel Orientation="Horizontal">
+                <ComboBox x:Name="RarityComboBox" Width="100" Margin="5">
+                    <ComboBoxItem>Common</ComboBoxItem>
+                    <ComboBoxItem>Uncommon</ComboBoxItem>
+                    <ComboBoxItem>Rare</ComboBoxItem>
+                    <ComboBoxItem>Epic</ComboBoxItem>
+                    <ComboBoxItem>Mythic</ComboBoxItem>
+                    <ComboBoxItem>Legendary</ComboBoxItem>
+                </ComboBox>
+                <Button Content="Apply" Click="ApplyRarityFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Weapon Filter">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="WeaponTextBox" Width="100" Margin="5"/>
+                <Button Content="Apply" Click="ApplyWeaponFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="POI Filter">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="POITextBox" Width="100" Margin="5"/>
+                <Button Content="Apply" Click="ApplyPOIFilter_Click" Margin="5"/>
+            </StackPanel>
+        </GroupBox>
+
+        <Button Content="Reset Filters" Click="ResetFilters_Click" Margin="5"/>
+    </StackPanel>
+</UserControl>
