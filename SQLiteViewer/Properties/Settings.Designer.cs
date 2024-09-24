@@ -104,5 +104,161 @@ namespace SQLiteViewer.Properties {
                 this["BetterReplayPlacement"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MinKillsTextBox {
+            get {
+                return ((int)(this["MinKillsTextBox"]));
+            }
+            set {
+                this["MinKillsTextBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int TeamTextBox {
+            get {
+                return ((int)(this["TeamTextBox"]));
+            }
+            set {
+                this["TeamTextBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PlatformComboBox {
+            get {
+                return ((string)(this["PlatformComboBox"]));
+            }
+            set {
+                this["PlatformComboBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MinPlaceTextBox {
+            get {
+                return ((int)(this["MinPlaceTextBox"]));
+            }
+            set {
+                this["MinPlaceTextBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MaxPlaceTextBox {
+            get {
+                return ((int)(this["MaxPlaceTextBox"]));
+            }
+            set {
+                this["MaxPlaceTextBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MinLvlTextBox {
+            get {
+                return ((int)(this["MinLvlTextBox"]));
+            }
+            set {
+                this["MinLvlTextBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MaxLvlTextBox {
+            get {
+                return ((int)(this["MaxLvlTextBox"]));
+            }
+            set {
+                this["MaxLvlTextBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MinActionNumberTextBox {
+            get {
+                return ((int)(this["MinActionNumberTextBox"]));
+            }
+            set {
+                this["MinActionNumberTextBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MaxActionNumberTextBox {
+            get {
+                return ((int)(this["MaxActionNumberTextBox"]));
+            }
+            set {
+                this["MaxActionNumberTextBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string StatusComboBox {
+            get {
+                return ((string)(this["StatusComboBox"]));
+            }
+            set {
+                this["StatusComboBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RarityComboBox {
+            get {
+                return ((string)(this["RarityComboBox"]));
+            }
+            set {
+                this["RarityComboBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string WeaponTextBox {
+            get {
+                return ((string)(this["WeaponTextBox"]));
+            }
+            set {
+                this["WeaponTextBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string POITextBox {
+            get {
+                return ((string)(this["POITextBox"]));
+            }
+            set {
+                this["POITextBox"] = value;
+            }
+        }
     }
 }

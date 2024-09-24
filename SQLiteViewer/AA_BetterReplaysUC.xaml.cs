@@ -16,6 +16,7 @@ using MaterialDesignThemes.Wpf;
 using SQLitePCL;
 using System.IO;
 using SQLiteViewer.Properties;
+using System.ComponentModel;
 
 namespace SQLiteViewer
 {
@@ -30,7 +31,7 @@ namespace SQLiteViewer
         private ObservableCollection<AA_BetterReplays> originalReplays;
         private readonly DatabaseManager dbManager;
 
-        private int _pageSize = 5;
+        private int _pageSize = 10;
         private int _currentPageIndex = 0;
         private int _totalPages;
 
@@ -198,13 +199,37 @@ namespace SQLiteViewer
         {
             mainWindow = (MainWindow)Application.Current.MainWindow;
         }
-    }
 
-    public class YourDataModel
-    {
-        public string StringField { get; set; }
-        public int IntField { get; set; }
-        public bool BoolField { get; set; }
-        public string ImageField { get; set; }  // Path to the image
+        private void DataGridView_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            e.Handled = true; // Cancel default sorting
+
+            // Get the property name to sort by
+            string sortBy = e.Column.SortMemberPath;
+
+            // Check current sort direction
+            ListSortDirection direction = e.Column.SortDirection ?? ListSortDirection.Ascending;
+
+            // Perform the custom sorting on the full data set
+            if (direction == ListSortDirection.Ascending)
+            {
+                Replays = new ObservableCollection<AA_BetterReplays>(Replays.OrderBy(x => GetPropertyValue(x, sortBy)));
+                e.Column.SortDirection = ListSortDirection.Descending;
+            }
+            else
+            {
+                Replays = new ObservableCollection<AA_BetterReplays>(Replays.OrderByDescending(x => GetPropertyValue(x, sortBy)));
+                e.Column.SortDirection = ListSortDirection.Ascending;
+            }
+
+            // Load the current page after sorting
+            LoadPage(0);
+        }
+
+        // Helper method to get the property value using reflection
+        private object GetPropertyValue(object obj, string propertyName)
+        {
+            return obj.GetType().GetProperty(propertyName).GetValue(obj, null);
+        }
     }
 }

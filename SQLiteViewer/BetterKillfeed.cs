@@ -30,27 +30,27 @@ namespace SQLiteViewer
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public static ObservableCollection<BetterKillfeed> FilterByActionNumber(ObservableCollection<BetterKillfeed> data, int minActionNumber, int maxActionNumber)
+        public static ObservableCollection<BetterKillfeed> FilterByActionNumber(IEnumerable<BetterKillfeed> data, int minActionNumber, int maxActionNumber)
         {
             return new ObservableCollection<BetterKillfeed>(data.Where(item => item.ActionNumber >= minActionNumber && item.ActionNumber <= maxActionNumber));
         }
 
-        public static ObservableCollection<BetterKillfeed> FilterByStatus(ObservableCollection<BetterKillfeed> data, string status)
+        public static ObservableCollection<BetterKillfeed> FilterByStatus(IEnumerable<BetterKillfeed> data, string status)
         {
             return new ObservableCollection<BetterKillfeed>(data.Where(item => item.Status == status));
         }
 
-        public static ObservableCollection<BetterKillfeed> FilterByRarity(ObservableCollection<BetterKillfeed> data, string rarity)
+        public static ObservableCollection<BetterKillfeed> FilterByRarity(IEnumerable<BetterKillfeed> data, string rarity)
         {
             return new ObservableCollection<BetterKillfeed>(data.Where(item => item.Rarity == rarity));
         }
 
-        public static ObservableCollection<BetterKillfeed> FilterByWeapon(ObservableCollection<BetterKillfeed> data, string weapon)
+        public static ObservableCollection<BetterKillfeed> FilterByWeapon(IEnumerable<BetterKillfeed> data, string weapon)
         {
             return new ObservableCollection<BetterKillfeed>(data.Where(item => item.Weapon == weapon));
         }
 
-        public static ObservableCollection<BetterKillfeed> FilterByPOI(ObservableCollection<BetterKillfeed> data, string poi)
+        public static ObservableCollection<BetterKillfeed> FilterByPOI(IEnumerable<BetterKillfeed> data, string poi)
         {
             return new ObservableCollection<BetterKillfeed>(data.Where(item => item.POI == poi));
         }

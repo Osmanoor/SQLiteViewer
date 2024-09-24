@@ -34,27 +34,27 @@ namespace SQLiteViewer
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public static ObservableCollection<AA_DistinctRoster> FilterByLvlRange(ObservableCollection<AA_DistinctRoster> data, int minLvl, int maxLvl)
+    public static IEnumerable<AA_DistinctRoster> FilterByLvlRange(IEnumerable<AA_DistinctRoster> data, int minLvl, int maxLvl)
     {
         return new ObservableCollection<AA_DistinctRoster>(data.Where(item => item.Lvl >= minLvl && item.Lvl <= maxLvl));
     }
 
-    public static ObservableCollection<AA_DistinctRoster> FilterByPlaceRange(ObservableCollection<AA_DistinctRoster> data, int minPlace, int maxPlace)
+    public static ObservableCollection<AA_DistinctRoster> FilterByPlaceRange(IEnumerable<AA_DistinctRoster> data, int minPlace, int maxPlace)
     {
         return new ObservableCollection<AA_DistinctRoster>(data.Where(item => item.Place >= minPlace && item.Place <= maxPlace));
     }
 
-    public static ObservableCollection<AA_DistinctRoster> FilterByPlatform(ObservableCollection<AA_DistinctRoster> data, string platform)
+    public static ObservableCollection<AA_DistinctRoster> FilterByPlatform(IEnumerable<AA_DistinctRoster> data, string platform)
     {
         return new ObservableCollection<AA_DistinctRoster>(data.Where(item => item.Platform == platform));
     }
 
-    public static ObservableCollection<AA_DistinctRoster> FilterByKills(ObservableCollection<AA_DistinctRoster> data, int minKills)
+    public static ObservableCollection<AA_DistinctRoster> FilterByKills(IEnumerable<AA_DistinctRoster> data, int minKills)
     {
         return new ObservableCollection<AA_DistinctRoster>(data.Where(item => item.Kills.HasValue && item.Kills.Value >= minKills));
     }
 
-    public static ObservableCollection<AA_DistinctRoster> FilterByTeam(ObservableCollection<AA_DistinctRoster> data, int team)
+    public static ObservableCollection<AA_DistinctRoster> FilterByTeam(IEnumerable<AA_DistinctRoster> data, int team)
     {
         return new ObservableCollection<AA_DistinctRoster>(data.Where(item => item.Team == team));
     }

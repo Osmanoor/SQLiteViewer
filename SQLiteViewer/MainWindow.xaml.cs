@@ -111,7 +111,7 @@ namespace SQLiteViewer
             homeBtn.IsSelected = false;
             featureBtn.IsSelected = false;
             backupBtn.IsSelected = false;
-            settingsBtn.IsSelected = false;
+            //settingsBtn.IsSelected = false;
 
         }
         private void homeBtn_Navigate(object sender, EventArgs e)
@@ -140,7 +140,7 @@ namespace SQLiteViewer
                 UnSelectAll();
                 var iconCard = (IconCard)sender;
                 iconCard.IsSelected = true;
-                NavigateTo(new AA_BetterReplaysUC());
+                NavigateTo(new AA_DistinctRosterFilterControl());
                 scrollViewer.ScrollToTop();
             }
             catch (Exception ex)
@@ -158,7 +158,7 @@ namespace SQLiteViewer
                 UnSelectAll();
                 var iconCard = (IconCard)sender;
                 iconCard.IsSelected = true;
-                NavigateTo(new AA_BetterReplaysUC());
+                NavigateTo(new BetterKillfeedFilterControl());
                 scrollViewer.ScrollToTop();
             }
             catch (Exception ex)

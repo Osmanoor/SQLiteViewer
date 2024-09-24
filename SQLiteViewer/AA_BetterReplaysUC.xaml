@@ -56,7 +56,8 @@
             ColumnHeaderStyle="{StaticResource HeaderStyle}"
             RowBackground="{StaticResource MaterialDesignDarkSeparatorBackground}"
             RowStyle="{StaticResource MaterialDesignDataGridRow}"
-            Style="{StaticResource DataGridStyle}">
+            Style="{StaticResource DataGridStyle}"
+            Sorting="DataGridView_Sorting">
             <DataGrid.Columns>
 
                 <DataGridTextColumn Binding="{Binding FileName}" Header="File Name" />
