@@ -1,7 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.ObjectModel;
-using System.Data.SQLite;
 
 namespace SQLiteViewer
 {
@@ -14,6 +13,7 @@ namespace SQLiteViewer
             connectionString = $"Data Source={dbPath}";
         }
 
+        // Method for AA_DistinctRoster with dynamic filters, pagination, and sorting
         public ObservableCollection<AA_DistinctRoster> FilterAndPaginateDistinctRoster(
             string fileName, DateTime? replayDate, string displayName, int? minLvl, int? maxLvl,
             string orderBy, bool ascending, int pageNumber, int pageSize)
@@ -94,6 +94,68 @@ namespace SQLiteViewer
                             MetK = reader.GetString(reader.GetOrdinal("MetK")),
                             MetD = reader.GetString(reader.GetOrdinal("MetD")),
                             Season = reader.GetString(reader.GetOrdinal("Season"))
+                        });
+                    }
+                }
+            }
+
+            return replays;
+        }
+
+        // Method for AA_BetterReplays with dynamic filters, pagination, and sorting
+        public ObservableCollection<AA_BetterReplays> FilterAndPaginateBetterReplays(
+            string teammates, string playlist, string orderBy, bool ascending, int pageNumber, int pageSize)
+        {
+            var replays = new ObservableCollection<AA_BetterReplays>();
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+
+                // Base query
+                command.CommandText = "SELECT * FROM AA_BetterReplays WHERE 1 = 1";
+
+                // Add filters dynamically
+                if (!string.IsNullOrEmpty(teammates))
+                {
+                    command.CommandText += " AND Teammates LIKE @teammates";
+                    command.Parameters.AddWithValue("@teammates", $"%{teammates}%");
+                }
+
+                if (!string.IsNullOrEmpty(playlist))
+                {
+                    command.CommandText += " AND Playlist LIKE @playlist";
+                    command.Parameters.AddWithValue("@playlist", $"%{playlist}%");
+                }
+
+                // Sorting
+                if (!string.IsNullOrEmpty(orderBy))
+                {
+                    command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
+                }
+
+                // Pagination
+                command.CommandText += " LIMIT @pageSize OFFSET @offset";
+                command.Parameters.AddWithValue("@pageSize", pageSize);
+                command.Parameters.AddWithValue("@offset", (pageNumber - 1) * pageSize);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        replays.Add(new AA_BetterReplays
+                        {
+                            FileName = reader["FileName"].ToString(),
+                            ReplayDate = DateTime.Parse(reader["ReplayDate"].ToString()),
+                            Playlist = reader["Playlist"].ToString(),
+                            Teammates = reader["Teammates"].ToString(),
+                            GameTime = Convert.ToDouble(reader["GameTime"]),
+                            Season = Convert.ToDouble(reader["Season"]),
+                            BotCount = Convert.ToInt32(reader["BotCount"]),
+                            Kills = Convert.ToInt32(reader["Kills"]),
+                            BotKills = reader["BotKills"] != DBNull.Value ? Convert.ToInt32(reader["BotKills"]) : (int?)null,
+                            Placement = Convert.ToInt32(reader["Placement"]),
+                            Ended = reader["Ended"].ToString()
                         });
                     }
                 }
