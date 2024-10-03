@@ -24,10 +24,8 @@ namespace SQLiteViewer
                 connection.Open();
                 var command = connection.CreateCommand();
 
-                // Base query
                 command.CommandText = "SELECT * FROM AA_DistinctRoster WHERE 1 = 1";
 
-                // Add filters dynamically
                 if (!string.IsNullOrEmpty(fileName))
                 {
                     command.CommandText += " AND Playlist LIKE @fileName";
@@ -58,13 +56,11 @@ namespace SQLiteViewer
                     command.Parameters.AddWithValue("@maxLvl", maxLvl.Value);
                 }
 
-                // Sorting
                 if (!string.IsNullOrEmpty(orderBy))
                 {
                     command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
                 }
 
-                // Pagination
                 command.CommandText += " LIMIT @pageSize OFFSET @offset";
                 command.Parameters.AddWithValue("@pageSize", pageSize);
                 command.Parameters.AddWithValue("@offset", (pageNumber - 1) * pageSize);
@@ -112,10 +108,8 @@ namespace SQLiteViewer
                 connection.Open();
                 var command = connection.CreateCommand();
 
-                // Base query
                 command.CommandText = "SELECT * FROM AA_BetterReplays WHERE 1 = 1";
 
-                // Add filters dynamically
                 if (!string.IsNullOrEmpty(teammates))
                 {
                     command.CommandText += " AND Teammates LIKE @teammates";
@@ -128,13 +122,11 @@ namespace SQLiteViewer
                     command.Parameters.AddWithValue("@playlist", $"%{playlist}%");
                 }
 
-                // Sorting
                 if (!string.IsNullOrEmpty(orderBy))
                 {
                     command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
                 }
 
-                // Pagination
                 command.CommandText += " LIMIT @pageSize OFFSET @offset";
                 command.Parameters.AddWithValue("@pageSize", pageSize);
                 command.Parameters.AddWithValue("@offset", (pageNumber - 1) * pageSize);
@@ -156,6 +148,78 @@ namespace SQLiteViewer
                             BotKills = reader["BotKills"] != DBNull.Value ? Convert.ToInt32(reader["BotKills"]) : (int?)null,
                             Placement = Convert.ToInt32(reader["Placement"]),
                             Ended = reader["Ended"].ToString()
+                        });
+                    }
+                }
+            }
+
+            return replays;
+        }
+
+        // Method for BetterKillfeed with dynamic filters, pagination, and sorting
+        public ObservableCollection<BetterKillfeed> FilterAndPaginateBetterKillfeed(
+            string fileName, string actioner, string actionee, string orderBy, bool ascending, int pageNumber, int pageSize)
+        {
+            var replays = new ObservableCollection<BetterKillfeed>();
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+
+                // Base query
+                command.CommandText = "SELECT * FROM BetterKillfeed WHERE 1 = 1";
+
+                // Add filters dynamically
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                    command.CommandText += " AND FileName LIKE @fileName";
+                    command.Parameters.AddWithValue("@fileName", $"%{fileName}%");
+                }
+
+                if (!string.IsNullOrEmpty(actioner))
+                {
+                    command.CommandText += " AND Actioner LIKE @actioner";
+                    command.Parameters.AddWithValue("@actioner", $"%{actioner}%");
+                }
+
+                if (!string.IsNullOrEmpty(actionee))
+                {
+                    command.CommandText += " AND Actionee LIKE @actionee";
+                    command.Parameters.AddWithValue("@actionee", $"%{actionee}%");
+                }
+
+                // Sorting
+                if (!string.IsNullOrEmpty(orderBy))
+                {
+                    command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
+                }
+
+                // Pagination
+                command.CommandText += " LIMIT @pageSize OFFSET @offset";
+                command.Parameters.AddWithValue("@pageSize", pageSize);
+                command.Parameters.AddWithValue("@offset", (pageNumber - 1) * pageSize);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        replays.Add(new BetterKillfeed
+                        {
+                            FileName = reader.GetString(reader.GetOrdinal("FileName")),
+                            ActionNumber = reader.GetInt32(reader.GetOrdinal("ActionNumber")),
+                            Actioner = reader.GetString(reader.GetOrdinal("Actioner")),
+                            Team1 = reader.GetInt32(reader.GetOrdinal("Team1")),
+                            Actionee = reader.GetString(reader.GetOrdinal("Actionee")),
+                            Team2 = reader.GetInt32(reader.GetOrdinal("Team2")),
+                            Status = reader.GetString(reader.GetOrdinal("Status")),
+                            Action = reader.IsDBNull(reader.GetOrdinal("Action")) ? null : reader.GetString(reader.GetOrdinal("Action")),
+                            Rarity = reader.GetString(reader.GetOrdinal("Rarity")),
+                            Weapon = reader.GetString(reader.GetOrdinal("Weapon")),
+                            POI = reader.IsDBNull(reader.GetOrdinal("POI")) ? null : reader.GetString(reader.GetOrdinal("POI")),
+                            ActionTime = reader.GetFloat(reader.GetOrdinal("ActionTime")),
+                            ReplayDate = reader.GetDateTime(reader.GetOrdinal("ReplayDate")),
+                            ActionerId = reader.GetString(reader.GetOrdinal("ActionerId")),
+                            ActioneeId = reader.GetString(reader.GetOrdinal("ActioneeId"))
                         });
                     }
                 }
