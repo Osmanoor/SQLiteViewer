@@ -17,6 +17,7 @@ using SQLitePCL;
 using System.IO;
 using SQLiteViewer.Properties;
 using System.ComponentModel;
+using static MaterialDesignThemes.Wpf.Theme;
 
 namespace SQLiteViewer
 {
@@ -160,36 +161,6 @@ namespace SQLiteViewer
             }
         }
 
-        private void DateFilter_Selected(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void DateFilter_Unselected(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Kills_Selected(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Kills_Unselected(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void PlaylistFilter_Selected(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void PlaylistFilter_Unselected(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             await mainWindow.FilterDialogHost.ShowDialog(new BetterReplaysDialog());
@@ -230,6 +201,67 @@ namespace SQLiteViewer
         private object GetPropertyValue(object obj, string propertyName)
         {
             return obj.GetType().GetProperty(propertyName).GetValue(obj, null);
+        }
+
+        private void DataGridView_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            if (DataGridView.SelectedCells.Count > 0)
+            {
+                var selectedCellInfo = e.AddedCells[0];
+                var columnHeader = selectedCellInfo.Column.Header.ToString();
+                var selectedCell = DataGridView.SelectedCells[0];
+                var cellInfo = selectedCell.Item as AA_BetterReplays;  // Replace with your data type
+
+                if (cellInfo != null)
+                {
+                    // Check which column was selected and apply the respective filter
+                    switch (selectedCell.Column.Header.ToString())
+                    {
+                        case "Playlist":
+                            ApplyPlaylistFilter(cellInfo.Playlist);  // Assuming Playlist is a string
+                            break;
+
+                        case "Teammates":
+                            ApplyTeammatesFilter(cellInfo.Teammates);  // Assuming Teammates is a string
+                            break;
+
+                        case "FileName":
+                            ApplyFileNameFilter(cellInfo.FileName);  // Assuming FileName is a string
+                            break;
+
+                        case "ReplayDate":
+                            ApplyReplayDateFilter(cellInfo.ReplayDate);  // Assuming ReplayDate is a DateTime
+                            break;
+                    }
+                }
+            }
+        }
+        // Filter by Playlist
+        private void ApplyPlaylistFilter(string playlistValue)
+        {
+            Settings.Default.BetterReplayPlaylist = playlistValue;
+            Settings.Default.Save();
+            PlaylistFilter.Visibility = Visibility.Visible;
+            PlaylistFilter.IsSelected = true;
+            ApplyFilters();
+        }
+
+        // Filter by Teammates
+        private void ApplyTeammatesFilter(string teammatesValue)
+        {
+            
+        }
+
+        // Filter by FileName
+        private void ApplyFileNameFilter(string fileNameValue)
+        {
+            
+        }
+
+        // Filter by ReplayDate
+        private void ApplyReplayDateFilter(DateTime replayDateValue)
+        {
+            
         }
     }
 }

@@ -26,25 +26,29 @@
                 <ListBoxItem
                     x:Name="DateFilter"
                     Content="Date"
-                    Selected="DateFilter_Selected"
-                    Unselected="DateFilter_Unselected" />
+                    Visibility="Collapsed" />
                 <ListBoxItem
                     x:Name="Kills"
                     Content="Kills"
-                    Selected="Kills_Selected"
-                    Unselected="Kills_Unselected" />
+                    Visibility="Collapsed" />
                 <ListBoxItem
                     x:Name="PlaylistFilter"
                     Content="Playlist"
-                    Selected="PlaylistFilter_Selected"
-                    Unselected="PlaylistFilter_Unselected" />
-                <ListBoxItem x:Name="SeasonFilter" Content="Season" />
-                <ListBoxItem x:Name="PlacementFilter" Content="Placement" />
+                    Visibility="Collapsed" />
+                <ListBoxItem
+                    x:Name="SeasonFilter"
+                    Content="Season"
+                    Visibility="Collapsed" />
+                <ListBoxItem
+                    x:Name="PlacementFilter"
+                    Content="Placement"
+                    Visibility="Collapsed" />
             </ListBox>
             <Button
                 Margin="0"
                 Click="Button_Click"
-                Style="{StaticResource StarButtonStyle}">
+                Style="{StaticResource StarButtonStyle}"
+                Visibility="Collapsed">
                 <materialDesign:PackIcon Kind="Gear" Style="{StaticResource IconStyle}" />
             </Button>
         </StackPanel>
@@ -56,8 +60,11 @@
             ColumnHeaderStyle="{StaticResource HeaderStyle}"
             RowBackground="{StaticResource MaterialDesignDarkSeparatorBackground}"
             RowStyle="{StaticResource MaterialDesignDataGridRow}"
+            SelectedCellsChanged="DataGridView_SelectedCellsChanged"
+            Sorting="DataGridView_Sorting"
             Style="{StaticResource DataGridStyle}"
-            Sorting="DataGridView_Sorting">
+            SelectionMode="Single"
+            SelectionUnit="Cell">
             <DataGrid.Columns>
 
                 <DataGridTextColumn Binding="{Binding FileName}" Header="File Name" />
