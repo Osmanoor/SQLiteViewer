@@ -35,6 +35,10 @@ namespace SQLiteViewer
         private int _pageSize = 10;
         private int _currentPageIndex = 0;
         private int _totalPages;
+        private string _orderBy = "";
+        private bool _ascending = true;
+        private string _teammate = "";
+        private string _playlist = "";
 
         public AA_BetterReplaysUC()
         {
@@ -47,12 +51,12 @@ namespace SQLiteViewer
             dbManager = new DatabaseManager(dbPath);
 
             // Initialize paged data collection
-            originalReplays = dbManager.GetAllReplays();
+            originalReplays = dbManager.FilterAndPaginateBetterReplays(teammate:"",playlist:"",orderBy:_orderBy,ascending:_ascending,0,_pageSize);
             Replays = new ObservableCollection<AA_BetterReplays>(originalReplays);
             _pagedDataCollection = new ObservableCollection<AA_BetterReplays>();
 
             // Calculate total pages
-            _totalPages = (originalReplays.Count + _pageSize - 1) / _pageSize;  // Rounded up division
+            _totalPages = ((dbManager.GetRowCount("AA_BetterReplays") + _pageSize - 1) / _pageSize);  // Rounded up division
 
             // Display the first page
             LoadPage(0);
@@ -65,7 +69,7 @@ namespace SQLiteViewer
                 return;
 
             _pagedDataCollection.Clear();
-            var pageData = Replays.Skip(pageIndex * _pageSize).Take(_pageSize).ToList();
+            var pageData = dbManager.FilterAndPaginateBetterReplays(teammate: _teammate, playlist: _playlist, orderBy: _orderBy, ascending: _ascending, pageIndex, _pageSize);
 
             foreach (var item in pageData)
             {
@@ -180,16 +184,16 @@ namespace SQLiteViewer
 
             // Check current sort direction
             ListSortDirection direction = e.Column.SortDirection ?? ListSortDirection.Ascending;
-
+            _orderBy = sortBy;
             // Perform the custom sorting on the full data set
             if (direction == ListSortDirection.Ascending)
             {
-                Replays = new ObservableCollection<AA_BetterReplays>(Replays.OrderBy(x => GetPropertyValue(x, sortBy)));
+                _ascending = true;
                 e.Column.SortDirection = ListSortDirection.Descending;
             }
             else
             {
-                Replays = new ObservableCollection<AA_BetterReplays>(Replays.OrderByDescending(x => GetPropertyValue(x, sortBy)));
+                _ascending = false;
                 e.Column.SortDirection = ListSortDirection.Ascending;
             }
 
@@ -218,19 +222,23 @@ namespace SQLiteViewer
                     switch (selectedCell.Column.Header.ToString())
                     {
                         case "Playlist":
-                            ApplyPlaylistFilter(cellInfo.Playlist);  // Assuming Playlist is a string
+                            ApplyPlaylistFilter( cellInfo.Playlist);  // Assuming Playlist is a string
                             break;
 
                         case "Teammates":
                             ApplyTeammatesFilter(cellInfo.Teammates);  // Assuming Teammates is a string
                             break;
 
-                        case "FileName":
-                            ApplyFileNameFilter(cellInfo.FileName);  // Assuming FileName is a string
+                        case "File Name":
+                            mainWindow.UnSelectAll();
+                            mainWindow.NavigateTo(new A_RosterWithCountUC(fileName:cellInfo.FileName));
+                            //ApplyFileNameFilter(cellInfo.FileName);  // Assuming FileName is a string
                             break;
 
-                        case "ReplayDate":
-                            ApplyReplayDateFilter(cellInfo.ReplayDate);  // Assuming ReplayDate is a DateTime
+                        case "Replay Date":
+                            mainWindow.UnSelectAll();
+                            mainWindow.NavigateTo(new A_RosterWithCountUC(replayDate: cellInfo.ReplayDate));
+                            //ApplyReplayDateFilter(cellInfo.ReplayDate);  // Assuming ReplayDate is a DateTime
                             break;
                     }
                 }
@@ -239,17 +247,21 @@ namespace SQLiteViewer
         // Filter by Playlist
         private void ApplyPlaylistFilter(string playlistValue)
         {
-            Settings.Default.BetterReplayPlaylist = playlistValue;
-            Settings.Default.Save();
+            _playlist = playlistValue;
             PlaylistFilter.Visibility = Visibility.Visible;
+            PlaylistFilter.Content = $"Playlist: {playlistValue}";
             PlaylistFilter.IsSelected = true;
-            ApplyFilters();
+            LoadPage(0);
         }
 
         // Filter by Teammates
         private void ApplyTeammatesFilter(string teammatesValue)
         {
-            
+            _teammate = teammatesValue;
+            TeammateFilter.Visibility = Visibility.Visible;
+            TeammateFilter.Content = $"Teammate: {teammatesValue}";
+            TeammateFilter.IsSelected = true;
+            LoadPage(0);
         }
 
         // Filter by FileName
@@ -262,6 +274,20 @@ namespace SQLiteViewer
         private void ApplyReplayDateFilter(DateTime replayDateValue)
         {
             
+        }
+
+        private void PlaylistFilter_Unselected(object sender, RoutedEventArgs e)
+        {
+            PlaylistFilter.Visibility = Visibility.Collapsed;
+            _playlist = "";
+            LoadPage(0);
+        }
+
+        private void TeammateFilter_Unselected(object sender, RoutedEventArgs e)
+        {
+            TeammateFilter.Visibility = Visibility.Collapsed;
+            _teammate = "";
+            LoadPage(0);
         }
     }
 }

@@ -5,11 +5,11 @@ using System.Data.SQLite;
 
 namespace SQLiteViewer
 {
-    public class DatabaseManager
+    public class DatabaseManager2
     {
         private readonly string connectionString;
 
-        public DatabaseManager(string dbPath)
+        public DatabaseManager2(string dbPath)
         {
             connectionString = $"Data Source={dbPath}";
         }

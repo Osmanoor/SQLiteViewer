@@ -106,12 +106,12 @@ namespace SQLiteViewer
         {
             MessageBox.Show(message);
         }
-        private void UnSelectAll()
+        public void UnSelectAll()
         {
             homeBtn.IsSelected = false;
             featureBtn.IsSelected = false;
             backupBtn.IsSelected = false;
-            //settingsBtn.IsSelected = false;
+            settingsBtn.IsSelected = false;
 
         }
         private void homeBtn_Navigate(object sender, EventArgs e)
@@ -176,7 +176,7 @@ namespace SQLiteViewer
                 UnSelectAll();
                 var iconCard = (IconCard)sender;
                 iconCard.IsSelected = true;
-                NavigateTo(new AA_BetterReplaysUC());
+                NavigateTo(new A_RosterWithCountUC());
                 scrollViewer.ScrollToTop();
             }
             catch (Exception ex)

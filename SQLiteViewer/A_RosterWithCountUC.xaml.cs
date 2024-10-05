@@ -16,7 +16,6 @@ using MaterialDesignThemes.Wpf;
 using SQLitePCL;
 using System.IO;
 using SQLiteViewer.Properties;
-using System.Security.AccessControl;
 using System.ComponentModel;
 
 namespace SQLiteViewer
@@ -24,12 +23,12 @@ namespace SQLiteViewer
     /// <summary>
     /// Interaction logic for AA_BetterReplaysUC.xaml
     /// </summary>
-    public partial class BetterKillfeedFilterControl : UserControl
+    public partial class A_RosterWithCountUC : UserControl
     {
         MainWindow mainWindow;
-        public ObservableCollection<BetterKillfeed> FilteredData { get; set; }
-        public ObservableCollection<BetterKillfeed> _pagedData { get; set; }
-        private ObservableCollection<BetterKillfeed> OriginalData;
+        public ObservableCollection<A_RosterWithCount> FilteredData { get; set; }
+        public ObservableCollection<A_RosterWithCount> _pagedData { get; set; }
+        private ObservableCollection<A_RosterWithCount> OriginalData;
         private readonly DatabaseManager dbManager;
 
         private int _pageSize = 10;
@@ -38,37 +37,37 @@ namespace SQLiteViewer
         private string _orderBy = "";
         private bool _ascending = true;
         private string _fileName = "";
-        private string _actioner = "";
-        private string _actionee = "";
+        private DateTime? _replayDate = null;
+        private string _displayName = "";
+        private string _isBot = "1";
+        private string _isTeam = "1";
 
-        public BetterKillfeedFilterControl(string fileName="", string actioner="", string actionee ="")
+        public A_RosterWithCountUC(string fileName = "",DateTime? replayDate=null)
         {
             InitializeComponent();
             this.DataContext = this;
+
             if (fileName != "")
             {
                 ApplyFileNameFilter(fileName);
             }
-            if (actioner != "")
+            if (replayDate != null)
             {
-                ApplyActionerFilter(actioner);
+                ApplyReplayDateFilter(replayDate.Value);
             }
-            if (actionee != "")
-            {
-                ApplyActioneeFilter(actionee);
-            }
+            
             // Initialize SQLitePCL.Batteries
             Batteries_V2.Init();
             string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.db");
             dbManager = new DatabaseManager(dbPath);
 
             // Initialize paged data collection
-            OriginalData = dbManager.FilterAndPaginateBetterKillFeed(fileName:_fileName,actioner:_actioner,actionee:_actionee,orderBy:_orderBy,ascending:_ascending,pageNumber:0,pageSize:_pageSize);
-            FilteredData = new ObservableCollection<BetterKillfeed>(OriginalData);
-            _pagedData = new ObservableCollection<BetterKillfeed>();
+            OriginalData = new ObservableCollection<A_RosterWithCount>();
+            FilteredData = new ObservableCollection<A_RosterWithCount>(OriginalData);
+            _pagedData = new ObservableCollection<A_RosterWithCount>();
 
             // Calculate total pages
-            _totalPages = (dbManager.GetRowCount("BetterKillfeed") + _pageSize - 1) / _pageSize;  // Rounded up division
+            _totalPages = ((dbManager.GetRowCount("A_RosterWithCount") + _pageSize - 1) / _pageSize);  // Rounded up division
 
             // Display the first page
             LoadPage(0);
@@ -81,7 +80,7 @@ namespace SQLiteViewer
                 return;
 
             _pagedData.Clear();
-            var pageData = dbManager.FilterAndPaginateBetterKillFeed(fileName: _fileName, actioner: _actioner, actionee: _actionee, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex, pageSize: _pageSize);
+            var pageData = dbManager.FilterAndPaginateRosterWithCount(fileName: _fileName, replayDate: _replayDate, displayName: _displayName, isBot:_isBot, isTeam:_isTeam, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex , pageSize: _pageSize);
 
             foreach (var item in pageData)
             {
@@ -124,45 +123,13 @@ namespace SQLiteViewer
             LoadPage(_totalPages - 1);
         }
 
-
-        // Method to apply the filter and refresh the DataGrid
-        private void ApplyFilters()
-        {
-            var filtered = OriginalData.AsEnumerable();
-
-            //apply filters
-            if (ActionNumberFilter.IsSelected)
-            {
-                filtered = BetterKillfeed.FilterByActionNumber(filtered, Settings.Default.MinActionNumberTextBox, Settings.Default.MaxActionNumberTextBox);
-            }
-            if (StatusFilter.IsSelected)
-            {
-                filtered = BetterKillfeed.FilterByStatus(filtered, Settings.Default.StatusComboBox);
-            }
-            if (RarityFilter.IsSelected)
-            {
-                filtered = BetterKillfeed.FilterByRarity(filtered, Settings.Default.RarityComboBox);
-            }
-            if (WeaponFilter.IsSelected)
-            {
-                filtered = BetterKillfeed.FilterByWeapon(filtered, Settings.Default.WeaponTextBox);
-            }
-            if (POIFilter.IsSelected)
-            {
-                filtered = BetterKillfeed.FilterByPOI(filtered, Settings.Default.POITextBox);
-            }
-
-            FilteredData = new ObservableCollection<BetterKillfeed>(filtered);
-            _totalPages = (FilteredData.Count + _pageSize - 1) / _pageSize;  // Rounded up division
-
-            LoadPage(0);
-        }
-
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {
-                //ApplyFilters();
+                _isBot = IsBotFilter != null && IsBotFilter.IsSelected ? "1" : "";
+                _isTeam = IsTeamFilter != null && IsTeamFilter.IsSelected ? "1" : "";
+                LoadPage(0);
             }
             catch (Exception ex)
             {
@@ -173,7 +140,7 @@ namespace SQLiteViewer
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await mainWindow.FilterDialogHost.ShowDialog(new BetterKillfeedDialog());
+         //   await mainWindow.FilterDialogHost.ShowDialog(new AA_DistinctRosterDialog());
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -183,7 +150,7 @@ namespace SQLiteViewer
 
         private void DataGridView_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if (e.PropertyName == "FileName" || e.PropertyName == "ActionerId" || e.PropertyName == "ActioneeId")
+            if (e.PropertyName == "Skin" || e.PropertyName == "PlayerId" || e.PropertyName == "FileName")
             {
                 e.Cancel = true;
             }
@@ -228,27 +195,33 @@ namespace SQLiteViewer
                 var selectedCellInfo = e.AddedCells[0];
                 var columnHeader = selectedCellInfo.Column.Header.ToString();
                 var selectedCell = DataGridView.SelectedCells[0];
-                var cellInfo = selectedCell.Item as BetterKillfeed;  // Replace with your data type
+                var cellInfo = selectedCell.Item as A_RosterWithCount;  // Replace with your data type
 
                 if (cellInfo != null)
                 {
                     // Check which column was selected and apply the respective filter
                     switch (selectedCell.Column.Header.ToString())
                     {
+                        case "DisplayName":
+                            ApplyDisplayNameFilter(cellInfo.PlayerId);  // Assuming Teammates is a string
+                            break;
+
                         case "FileName":
-                            ApplyFileNameFilter(cellInfo.FileName);  // Assuming Playlist is a string
+                            ApplyFileNameFilter(cellInfo.FileName);  // Assuming FileName is a string
                             break;
 
-                        case "ActionerId":
-                            ApplyActionerFilter(cellInfo.ActionerId);  // Assuming Teammates is a string
+                        case "Date":
+                            ApplyReplayDateFilter(cellInfo.Date);  // Assuming ReplayDate is a DateTime
                             break;
 
-                        case "ActioneeId":
-                            ApplyActioneeFilter(cellInfo.ActioneeId);  // Assuming FileName is a string
+                        case "Kills":
+                            mainWindow.UnSelectAll();
+                            mainWindow.NavigateTo(new BetterKillfeedFilterControl(cellInfo.FileName,actioner: cellInfo.PlayerId));
                             break;
 
-                        case "ReplayDate":
-                            //ApplyReplayDateFilter(cellInfo.ReplayDate);  // Assuming ReplayDate is a DateTime
+                        case "Place":
+                            mainWindow.UnSelectAll();
+                            mainWindow.NavigateTo(new BetterKillfeedFilterControl(cellInfo.FileName,actionee: cellInfo.PlayerId));
                             break;
                     }
                 }
@@ -258,46 +231,45 @@ namespace SQLiteViewer
         private void ApplyFileNameFilter(string fileNameValue)
         {
             _fileName = fileNameValue;
-            fileNameFilter.Visibility = Visibility.Visible;
-            fileNameFilter.Content = $"FileName: {fileNameValue}";
-            fileNameFilter.IsSelected = true;
+            FileNameFilter.Visibility = Visibility.Visible;
+            FileNameFilter.Content = $"FileName: {fileNameValue}";
+            FileNameFilter.IsSelected = true;
             LoadPage(0);
         }
-        private void ApplyActionerFilter(string actionerValue)
+        private void ApplyReplayDateFilter(DateTime replayDateValue)
         {
-            _actioner = actionerValue;
-            ActionerFilter.Visibility = Visibility.Visible;
-            ActionerFilter.Content =  $"ActionerID: {actionerValue}";
-            ActionerFilter.IsSelected = true;
+            _replayDate = replayDateValue;
+            ReplayDateFilter.Visibility = Visibility.Visible;
+            ReplayDateFilter.Content = $"Date: {replayDateValue}";
+            ReplayDateFilter.IsSelected = true;
             LoadPage(0);
         }
-        private void ApplyActioneeFilter(string actioneeValue)
+        private void ApplyDisplayNameFilter(string displayNameValue)
         {
-            _actionee = actioneeValue;
-            ActioneeFilter.Visibility = Visibility.Visible;
-            ActioneeFilter.Content = $"ActioneeID: {actioneeValue}";
-            ActioneeFilter.IsSelected = true;
+            _displayName = displayNameValue;
+            DisplayNameFilter.Visibility = Visibility.Visible;
+            DisplayNameFilter.Content = $"PlayerID: {displayNameValue}";
+            DisplayNameFilter.IsSelected = true;
             LoadPage(0);
         }
-
-        private void fileNameFilter_Unselected(object sender, RoutedEventArgs e)
+        private void FileNameFilter_Unselected(object sender, RoutedEventArgs e)
         {
-            fileNameFilter.Visibility = Visibility.Collapsed;
+            FileNameFilter.Visibility = Visibility.Collapsed;
             _fileName = "";
             LoadPage(0);
         }
 
-        private void ActionerFilter_Unselected(object sender, RoutedEventArgs e)
+        private void ReplayDateFilter_Unselected(object sender, RoutedEventArgs e)
         {
-            ActionerFilter.Visibility = Visibility.Collapsed;
-            _actioner = "";
+            ReplayDateFilter.Visibility = Visibility.Collapsed;
+            _replayDate = null;
             LoadPage(0);
         }
 
-        private void ActioneeFilter_Unselected(object sender, RoutedEventArgs e)
+        private void DisplayNameFilter_Unselected(object sender, RoutedEventArgs e)
         {
-            ActioneeFilter.Visibility = Visibility.Collapsed;
-            _actionee = "";
+            DisplayNameFilter.Visibility = Visibility.Collapsed;
+            _displayName = "";
             LoadPage(0);
         }
     }

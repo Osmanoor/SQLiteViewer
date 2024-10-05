@@ -47,15 +47,16 @@
                         <templates:IconCard
                             x:Name="featureBtn"
                             ImageSource="pack://application:,,,/Resources/rocket.png"
-                            Navigate="featureBtn_Navigate" />
+                            Navigate="featureBtn_Navigate" 
+                            Visibility="Collapsed"/>
                         <templates:IconCard
                             x:Name="backupBtn"
                             ImageSource="pack://application:,,,/Resources/screen.png"
                             Navigate="backupBtn_Navigate" />
-                        <!--<templates:IconCard
+                        <templates:IconCard
                             x:Name="settingsBtn"
                             ImageSource="pack://application:,,,/Resources/settings.png"
-                            Navigate="settingsBtn_Navigate" />-->
+                            Navigate="settingsBtn_Navigate" />
                     </StackPanel>
                 </Grid>
                 <Grid Grid.Column="1">

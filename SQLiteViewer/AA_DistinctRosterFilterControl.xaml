@@ -16,7 +16,10 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+        <StackPanel
+            HorizontalAlignment="Center"
+            Orientation="Horizontal"
+            Visibility="Collapsed">
             <!--  Filter Buttons  -->
             <ListBox
                 HorizontalAlignment="Center"
@@ -59,8 +62,8 @@
             MinRowHeight="80"
             RowBackground="{StaticResource MaterialDesignDarkSeparatorBackground}"
             RowStyle="{StaticResource MaterialDesignDataGridRow}"
-            Style="{StaticResource DataGridStyle}"
-            Sorting="DataGridView_Sorting">
+            Sorting="DataGridView_Sorting"
+            Style="{StaticResource DataGridStyle}">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Skin">
                     <DataGridTemplateColumn.CellTemplate>

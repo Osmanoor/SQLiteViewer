@@ -139,7 +139,7 @@
         <Setter Property="FontWeight" Value="ExtraBold" />
         <Setter Property="FontSize" Value="56" />
         <Setter Property="Foreground" Value="{StaticResource foreground}" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Visibility" Value="Collapsed" />
     </Style>
@@ -152,6 +152,7 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Text" Value="Welcome back, Aymen" />
+        <Setter Property="Margin" Value="10" />
     </Style>
 
     <Style
@@ -313,6 +314,8 @@
         <Setter Property="EnableColumnVirtualization" Value="True" />
         <Setter Property="IsReadOnly" Value="True" />
         <Setter Property="RowHeight" Value="40" />
+        <Setter Property="SelectionMode" Value="Single" />
+        <Setter Property="SelectionUnit" Value="Cell" />
     </Style>
     <Style
         x:Key="HeaderStyle"

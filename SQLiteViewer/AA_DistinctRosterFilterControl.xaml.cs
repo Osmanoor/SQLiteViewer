@@ -34,6 +34,8 @@ namespace SQLiteViewer
         private int _pageSize = 10;
         private int _currentPageIndex = 0;
         private int _totalPages;
+        private string _orderBy = "";
+        private bool _ascending = true;
 
         public AA_DistinctRosterFilterControl()
         {
@@ -46,12 +48,12 @@ namespace SQLiteViewer
             dbManager = new DatabaseManager(dbPath);
 
             // Initialize paged data collection
-            OriginalData = dbManager.GetAllDistictRoaster();
+            OriginalData = dbManager.FilterAndPaginateDistinctRoster(fileName:"",replayDate:null,displayName:null,minLvl:null,maxLvl:null,orderBy:null,ascending:true,pageNumber:0,pageSize:10);
             FilteredData = new ObservableCollection<AA_DistinctRoster>(OriginalData);
             _pagedData = new ObservableCollection<AA_DistinctRoster>();
 
             // Calculate total pages
-            _totalPages = (OriginalData.Count + _pageSize - 1) / _pageSize;  // Rounded up division
+            _totalPages = ((dbManager.GetRowCount("AA_DistinctRoster") + _pageSize - 1) / _pageSize);  // Rounded up division
 
             // Display the first page
             LoadPage(0);
@@ -64,7 +66,7 @@ namespace SQLiteViewer
                 return;
 
             _pagedData.Clear();
-            var pageData = FilteredData.Skip(pageIndex * _pageSize).Take(_pageSize).ToList();
+            var pageData = dbManager.FilterAndPaginateDistinctRoster(fileName: "", replayDate: null, displayName: null, minLvl: null, maxLvl: null, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex, pageSize: _pageSize);
 
             foreach (var item in pageData)
             {
@@ -145,7 +147,7 @@ namespace SQLiteViewer
         {
             try
             {
-                ApplyFilters();
+                //ApplyFilters();
             }
             catch (Exception ex)
             {
@@ -186,7 +188,7 @@ namespace SQLiteViewer
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await mainWindow.FilterDialogHost.ShowDialog(new AA_DistinctRosterDialog());
+         //   await mainWindow.FilterDialogHost.ShowDialog(new AA_DistinctRosterDialog());
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -211,16 +213,16 @@ namespace SQLiteViewer
 
             // Check current sort direction
             ListSortDirection direction = e.Column.SortDirection ?? ListSortDirection.Ascending;
-
+            _orderBy = sortBy;
             // Perform the custom sorting on the full data set
             if (direction == ListSortDirection.Ascending)
             {
-                FilteredData = new ObservableCollection<AA_DistinctRoster>(FilteredData.OrderBy(x => GetPropertyValue(x, sortBy)));
+                _ascending = true;
                 e.Column.SortDirection = ListSortDirection.Descending;
             }
             else
             {
-                FilteredData = new ObservableCollection<AA_DistinctRoster>(FilteredData.OrderByDescending(x => GetPropertyValue(x, sortBy)));
+                _ascending = false;
                 e.Column.SortDirection = ListSortDirection.Ascending;
             }
 

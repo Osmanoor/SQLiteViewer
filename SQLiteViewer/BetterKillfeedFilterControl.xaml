@@ -13,10 +13,16 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+        <TextBlock Style="{StaticResource H1Style}" Text="Better Kill Feed" />
+
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            Orientation="Horizontal">
             <!--  Filter Buttons  -->
             <ListBox
                 HorizontalAlignment="Center"
@@ -26,25 +32,44 @@
                 <ListBoxItem
                     x:Name="ActionNumberFilter"
                     Content="Action Number"
-                    Selected="DateFilter_Selected"
-                    Unselected="DateFilter_Unselected" />
+                    Visibility="Collapsed" />
                 <ListBoxItem
                     x:Name="StatusFilter"
                     Content="Status"
-                    Selected="Kills_Selected"
-                    Unselected="Kills_Unselected" />
+                    Visibility="Collapsed" />
                 <ListBoxItem
                     x:Name="RarityFilter"
                     Content="Rarity"
-                    Selected="PlaylistFilter_Selected"
-                    Unselected="PlaylistFilter_Unselected" />
-                <ListBoxItem x:Name="WeaponFilter" Content="Weapon" />
-                <ListBoxItem x:Name="POIFilter" Content="POI" />
+                    Visibility="Collapsed" />
+                <ListBoxItem
+                    x:Name="WeaponFilter"
+                    Content="Weapon"
+                    Visibility="Collapsed" />
+                <ListBoxItem
+                    x:Name="POIFilter"
+                    Content="POI"
+                    Visibility="Collapsed" />
+                <ListBoxItem
+                    x:Name="fileNameFilter"
+                    Content="FileName"
+                    Unselected="fileNameFilter_Unselected"
+                    Visibility="Collapsed" />
+                <ListBoxItem
+                    x:Name="ActionerFilter"
+                    Content="Actioner"
+                    Unselected="ActionerFilter_Unselected"
+                    Visibility="Collapsed" />
+                <ListBoxItem
+                    x:Name="ActioneeFilter"
+                    Content="Actionee"
+                    Unselected="ActioneeFilter_Unselected"
+                    Visibility="Collapsed" />
             </ListBox>
             <Button
                 Margin="0"
                 Click="Button_Click"
-                Style="{StaticResource StarButtonStyle}">
+                Style="{StaticResource StarButtonStyle}"
+                Visibility="Collapsed">
                 <materialDesign:PackIcon Kind="Gear" Style="{StaticResource IconStyle}" />
             </Button>
         </StackPanel>
@@ -52,18 +77,19 @@
         <!--  DataGrid for displaying data  -->
         <DataGrid
             x:Name="DataGridView"
-            Grid.Row="1"
+            Grid.Row="2"
             AutoGenerateColumns="True"
             AutoGeneratingColumn="DataGridView_AutoGeneratingColumn"
             ColumnHeaderStyle="{StaticResource HeaderStyle}"
             MinRowHeight="80"
             RowBackground="{StaticResource MaterialDesignDarkSeparatorBackground}"
             RowStyle="{StaticResource MaterialDesignDataGridRow}"
-            Style="{StaticResource DataGridStyle}"
-            Sorting="DataGridView_Sorting"/>
+            SelectedCellsChanged="DataGridView_SelectedCellsChanged"
+            Sorting="DataGridView_Sorting"
+            Style="{StaticResource DataGridStyle}" />
         <!--  Pagination Controls  -->
         <StackPanel
-            Grid.Row="2"
+            Grid.Row="3"
             Margin="10"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
