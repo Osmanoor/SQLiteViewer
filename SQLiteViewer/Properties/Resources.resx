@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="bluex" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bluex.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="bot" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bot.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -127,8 +130,20 @@
   <data name="Character_AccentWall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Character_AccentWall.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="ghost" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ghost.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="glow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\glow.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="home" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\home.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="redglow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\redglow.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="redx" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\redx.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="rocket" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\rocket.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

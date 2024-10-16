@@ -63,6 +63,16 @@ namespace SQLiteViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] bluex {
+            get {
+                object obj = ResourceManager.GetObject("bluex", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] bot {
             get {
                 object obj = ResourceManager.GetObject("bot", resourceCulture);
@@ -93,9 +103,49 @@ namespace SQLiteViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] ghost {
+            get {
+                object obj = ResourceManager.GetObject("ghost", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] glow {
+            get {
+                object obj = ResourceManager.GetObject("glow", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] home {
             get {
                 object obj = ResourceManager.GetObject("home", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] redglow {
+            get {
+                object obj = ResourceManager.GetObject("redglow", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] redx {
+            get {
+                object obj = ResourceManager.GetObject("redx", resourceCulture);
                 return ((byte[])(obj));
             }
         }
