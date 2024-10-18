@@ -17,6 +17,9 @@ using SQLitePCL;
 using System.IO;
 using SQLiteViewer.Properties;
 using System.ComponentModel;
+using System.Drawing;
+using static System.Net.Mime.MediaTypeNames;
+
 
 namespace SQLiteViewer
 {
@@ -85,6 +88,21 @@ namespace SQLiteViewer
 
             foreach (var item in pageData)
             {
+                Bitmap image1 = new Bitmap(120, 120);
+                if (File.Exists(item.Skin))
+                {
+                    image1 = new Bitmap(item.Skin);
+                }
+                else
+                {
+
+                }
+                Bitmap image2 = new Bitmap(@"C:\Users\MK\Desktop\redglow.png");
+                Bitmap image3 = new Bitmap(@"D:\Projects\Work\Diadan\data\redx.png");
+                Bitmap image4 = new Bitmap(@"D:\Projects\Work\Diadan\data\ghost.png");
+                Bitmap result = Merge([image1,image2,image3,image4]);
+                result.Save(Path.Combine(@"C:\Users\MK\Desktop\Anas vid", item.FileName + ".png"), System.Drawing.Imaging.ImageFormat.Png);
+                item.Skin = Path.Combine(@"C:\Users\MK\Desktop\Anas vid", item.FileName + ".png");
                 _pagedData.Add(item);
             }
 
@@ -147,7 +165,7 @@ namespace SQLiteViewer
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
         }
 
         private void DataGridView_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -274,6 +292,26 @@ namespace SQLiteViewer
             DisplayNameFilter.Visibility = Visibility.Collapsed;
             _displayName = "";
             LoadPage(0);
+        }
+        private static Bitmap Merge(List<Bitmap> images)
+        {
+            var enumerable = images as List<Bitmap> ?? images.ToList();
+            var sample = enumerable.First();
+            var bitmap = new Bitmap(sample.Width, sample.Height);
+            bitmap.SetResolution(sample.HorizontalResolution, sample.VerticalResolution);
+            using (var g = Graphics.FromImage(bitmap))
+            {
+                foreach (var image in enumerable)
+                {
+                    g.DrawImage(image, 0, 0);
+                }
+            }
+            //foreach (var bmp in enumerable)
+            //{
+            //    bmp.Dispose();
+            //}
+            return bitmap;
+
         }
     }
 }
