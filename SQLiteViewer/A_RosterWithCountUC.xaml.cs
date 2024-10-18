@@ -41,6 +41,7 @@ namespace SQLiteViewer
         private string _displayName = "";
         private string _isBot = "1";
         private string _isTeam = "1";
+        private string _isAnon = "1";
 
         public A_RosterWithCountUC(string fileName = "",DateTime? replayDate=null)
         {
@@ -80,7 +81,7 @@ namespace SQLiteViewer
                 return;
 
             _pagedData.Clear();
-            var pageData = dbManager.FilterAndPaginateRosterWithCount(fileName: _fileName, replayDate: _replayDate, displayName: _displayName, isBot:_isBot, isTeam:_isTeam, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex , pageSize: _pageSize);
+            var pageData = dbManager.FilterAndPaginateRosterWithCount(fileName: _fileName, replayDate: _replayDate, displayName: _displayName, isBot:_isBot, isTeam:_isTeam,isAnon:_isAnon, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex , pageSize: _pageSize);
 
             foreach (var item in pageData)
             {
@@ -129,6 +130,7 @@ namespace SQLiteViewer
             {
                 _isBot = IsBotFilter != null && IsBotFilter.IsSelected ? "1" : "";
                 _isTeam = IsTeamFilter != null && IsTeamFilter.IsSelected ? "1" : "";
+                _isAnon = IsAnonFilter != null && IsAnonFilter.IsSelected ? "1" : "";
                 LoadPage(0);
             }
             catch (Exception ex)
@@ -150,7 +152,8 @@ namespace SQLiteViewer
 
         private void DataGridView_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if (e.PropertyName == "Skin" || e.PropertyName == "PlayerId" || e.PropertyName == "FileName")
+            if (e.PropertyName == "Skin" || e.PropertyName == "PlayerId" || e.PropertyName == "FileName"
+                || e.PropertyName == "MetK" || e.PropertyName == "MetD" || e.PropertyName == "Anon")
             {
                 e.Cancel = true;
             }

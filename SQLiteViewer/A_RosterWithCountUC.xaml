@@ -49,6 +49,10 @@
                     Content="Team"
                     IsSelected="True" />
                 <ListBoxItem
+                    x:Name="IsAnonFilter"
+                    Content="Anon"
+                    IsSelected="True" />
+                <ListBoxItem
                     x:Name="FileNameFilter"
                     Content="FileName"
                     Unselected="FileNameFilter_Unselected"

@@ -29,21 +29,21 @@
                     Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
                     From="1000"
                     To="0"
-                    Duration="0:0:0.5" />
+                    Duration="0:0:0" />
             </Storyboard>
             <Storyboard x:Key="SlideInFromLeft">
                 <DoubleAnimation
                     Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
                     From="-100"
                     To="0"
-                    Duration="0:0:1" />
+                    Duration="0:0:0" />
             </Storyboard>
             <Storyboard x:Key="SlideInFromTop">
                 <DoubleAnimation
                     Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
                     From="-100"
                     To="0"
-                    Duration="0:0:1" />
+                    Duration="0:0:0" />
             </Storyboard>
 
         </ResourceDictionary>

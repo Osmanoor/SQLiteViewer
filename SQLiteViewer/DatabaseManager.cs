@@ -179,7 +179,7 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
             return replays;
         }
         public ObservableCollection<A_RosterWithCount> FilterAndPaginateRosterWithCount(
-            string fileName, DateTime? replayDate, string displayName, string isBot, string isTeam,
+            string fileName, DateTime? replayDate, string displayName, string isBot, string isTeam, string isAnon,
             string orderBy, bool ascending, int pageNumber, int pageSize)
         {
             var replays = new ObservableCollection<A_RosterWithCount>();
@@ -217,6 +217,10 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 if (!string.IsNullOrEmpty(isTeam))
                 {
                     command.CommandText += $" AND isTeam = {isTeam}";
+                }
+                if (!string.IsNullOrEmpty(isAnon))
+                {
+                    command.CommandText += $" AND Anon = {isAnon}";
                 }
 
                 // Sorting

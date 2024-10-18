@@ -68,8 +68,8 @@ namespace SQLiteViewer
                 slideInLeftStoryboard = (Storyboard)FindResource("SlideInFromLeft");
                 slideInTopStoryboard = (Storyboard)FindResource("SlideInFromTop");
                 Pages = new List<UserControl>();
-                BeginSlidingTop(HeaderGrid);
-                BeginSlidingLeft(IconGrid);
+                //BeginSlidingTop(HeaderGrid);
+                //BeginSlidingLeft(IconGrid);
                 homeBtn.IsSelected = true;
                 NavigateTo(new AA_BetterReplaysUC());
             }
@@ -195,7 +195,7 @@ namespace SQLiteViewer
                 if (oldControl != null)
                 {
                     var storyboard = new Storyboard();
-                    var fadeOutAnimation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(0.5)));
+                    var fadeOutAnimation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(0)));
                     fadeOutAnimation.Completed += (s, e) =>
                     {
                         scrollViewer.Content = newControl;

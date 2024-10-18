@@ -14,12 +14,12 @@
                             Storyboard.TargetProperty="Opacity"
                             From="0"
                             To="1"
-                            Duration="0:0:1" />
+                            Duration="0:0:0" />
                         <ThicknessAnimation
                             Storyboard.TargetProperty="Margin"
                             From="100,0,0,0"
                             To="0"
-                            Duration="0:0:1" />
+                            Duration="0:0:0" />
                     </Storyboard>
                 </BeginStoryboard>
             </EventTrigger>
