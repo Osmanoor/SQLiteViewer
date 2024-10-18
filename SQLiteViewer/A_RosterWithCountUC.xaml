@@ -93,7 +93,7 @@
                             <Image
                                 Width="50"
                                 Height="50"
-                                Source="{Binding Skin, Mode=OneWay, IsAsync=True}" />
+                                Source="{Binding Skin2, Mode=OneWay, IsAsync=True}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

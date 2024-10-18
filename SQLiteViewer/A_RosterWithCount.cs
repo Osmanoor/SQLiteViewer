@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Controls;
 
 namespace SQLiteViewer
 {
@@ -27,6 +28,7 @@ namespace SQLiteViewer
     public string MetD { get; set; }
     public string Season { get; set; }
     public string FileName { get; set; }
+    public string Skin2 { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -17,10 +17,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\bluex.png" />
     <None Remove="Resources\bot.png" />
     <None Remove="Resources\Character_AbstractMirror_Rogue.png" />
     <None Remove="Resources\Character_AccentWall.png" />
+    <None Remove="Resources\ghost.png" />
+    <None Remove="Resources\glow.png" />
     <None Remove="Resources\home.png" />
+    <None Remove="Resources\redglow.png" />
     <None Remove="Resources\rocket.png" />
     <None Remove="Resources\screen.png" />
     <None Remove="Resources\settings.png" />
@@ -36,10 +40,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Overlays\bluex.png" />
+    <Resource Include="Resources\bluex.png" />
     <Resource Include="Resources\bot.png" />
     <Resource Include="Resources\Character_AbstractMirror_Rogue.png" />
     <Resource Include="Resources\Character_AccentWall.png" />
+    <Resource Include="Overlays\ghost.png" />
+    <Resource Include="Overlays\glow.png" />
+    <Resource Include="Resources\ghost.png" />
+    <Resource Include="Resources\glow.png" />
     <Resource Include="Resources\home.png" />
+    <Resource Include="Overlays\redglow.png" />
+    <Resource Include="Resources\redglow.png" />
     <Resource Include="Resources\rocket.png" />
     <Resource Include="Resources\screen.png" />
     <Resource Include="Resources\settings.png" />
