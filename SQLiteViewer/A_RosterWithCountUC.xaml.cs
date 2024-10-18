@@ -88,21 +88,33 @@ namespace SQLiteViewer
 
             foreach (var item in pageData)
             {
-                Bitmap image1 = new Bitmap(120, 120);
+                List<Bitmap> bitmaps = new List<Bitmap>();
                 if (File.Exists(item.Skin))
                 {
-                    image1 = new Bitmap(item.Skin);
+                    bitmaps.Add(new Bitmap(item.Skin));
                 }
-                else
+                if (item.MetD == "1")
                 {
-
+                    bitmaps.Add( new Bitmap(LoadBitmapFromByteArray(Properties.Resources.glow)));
                 }
-                Bitmap image2 = new Bitmap(@"C:\Users\MK\Desktop\redglow.png");
-                Bitmap image3 = new Bitmap(@"D:\Projects\Work\Diadan\data\redx.png");
-                Bitmap image4 = new Bitmap(@"D:\Projects\Work\Diadan\data\ghost.png");
-                Bitmap result = Merge([image1,image2,image3,image4]);
-                result.Save(Path.Combine(@"C:\Users\MK\Desktop\Anas vid", item.FileName + ".png"), System.Drawing.Imaging.ImageFormat.Png);
-                item.Skin = Path.Combine(@"C:\Users\MK\Desktop\Anas vid", item.FileName + ".png");
+                if (item.MetD == "2")
+                {
+                    bitmaps.Add(new Bitmap(LoadBitmapFromByteArray(Properties.Resources.redglow)));
+                }
+                if (item.MetK == "1")
+                {
+                    bitmaps.Add(new Bitmap(LoadBitmapFromByteArray(Properties.Resources.redx)));
+                }
+                if (item.MetK == "2")
+                {
+                    bitmaps.Add(new Bitmap(LoadBitmapFromByteArray(Properties.Resources.bluex)));
+                }
+                if (item.Anon == 1)
+                {
+                    bitmaps.Add(new Bitmap(LoadBitmapFromByteArray(Properties.Resources.ghost)));
+                }
+                Bitmap result = Merge(bitmaps);
+                item.BitmapSource = ConvertBitmapToBitmapSource(result);
                 _pagedData.Add(item);
             }
 
@@ -171,7 +183,7 @@ namespace SQLiteViewer
         private void DataGridView_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             if (e.PropertyName == "Skin" || e.PropertyName == "PlayerId" || e.PropertyName == "FileName"
-                || e.PropertyName == "MetK" || e.PropertyName == "MetD" || e.PropertyName == "Anon")
+                || e.PropertyName == "MetK" || e.PropertyName == "MetD" || e.PropertyName == "Anon" || e.PropertyName == "BitmapSource")
             {
                 e.Cancel = true;
             }
@@ -295,23 +307,60 @@ namespace SQLiteViewer
         }
         private static Bitmap Merge(List<Bitmap> images)
         {
-            var enumerable = images as List<Bitmap> ?? images.ToList();
-            var sample = enumerable.First();
-            var bitmap = new Bitmap(sample.Width, sample.Height);
-            bitmap.SetResolution(sample.HorizontalResolution, sample.VerticalResolution);
-            using (var g = Graphics.FromImage(bitmap))
+            try
             {
-                foreach (var image in enumerable)
+                var enumerable = images as List<Bitmap> ?? images.ToList();
+                var sample = enumerable.First();
+                var bitmap = new Bitmap(sample.Width, sample.Height);
+                bitmap.SetResolution(sample.HorizontalResolution, sample.VerticalResolution);
+                using (var g = Graphics.FromImage(bitmap))
                 {
-                    g.DrawImage(image, 0, 0);
+                    foreach (var image in enumerable)
+                    {
+                        g.DrawImage(image, 0, 0);
+                    }
                 }
+                //foreach (var bmp in enumerable)
+                //{
+                //    bmp.Dispose();
+                //}
+                return bitmap;
             }
-            //foreach (var bmp in enumerable)
-            //{
-            //    bmp.Dispose();
-            //}
-            return bitmap;
+            catch (Exception)
+            {
+                return new Bitmap(120, 120);
+            }
+            
 
+        }
+        public BitmapSource ConvertBitmapToBitmapSource(Bitmap bitmap)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                // Save the bitmap to the memory stream
+                bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+
+                // Reset the stream position to the beginning
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                // Create a BitmapImage from the stream
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad; // Ensure the stream can be closed after loading
+                bitmapImage.StreamSource = memoryStream;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze(); // Make it cross-thread accessible (optional)
+
+                return bitmapImage;
+            }
+        }
+        public Bitmap LoadBitmapFromByteArray(byte[] imageData)
+        {
+            using (var memoryStream = new MemoryStream(imageData))
+            {
+                // Create a Bitmap from the memory stream
+                return new Bitmap(memoryStream);
+            }
         }
     }
 }
