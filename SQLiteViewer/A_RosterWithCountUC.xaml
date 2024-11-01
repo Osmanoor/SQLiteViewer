@@ -26,7 +26,6 @@
             <ListBox
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                SelectionChanged="ListBox_SelectionChanged"
                 Style="{StaticResource MaterialDesignFilterChipSecondaryListBox}">
                 <ListBoxItem
                     x:Name="LevelFilter"
@@ -43,15 +42,21 @@
                 <ListBoxItem
                     x:Name="IsBotFilter"
                     Content="Bots"
-                    IsSelected="True" />
+                    IsSelected="True"
+                    Selected="IsBotFilter_Selected"
+                    Unselected="IsBotFilter_Selected" />
                 <ListBoxItem
                     x:Name="IsTeamFilter"
                     Content="Team"
-                    IsSelected="True" />
+                    IsSelected="True"
+                    Selected="IsTeamFilter_Selected"
+                    Unselected="IsTeamFilter_Selected" />
                 <ListBoxItem
                     x:Name="IsAnonFilter"
                     Content="Anon"
-                    IsSelected="True" />
+                    IsSelected="True"
+                    Selected="IsAnonFilter_Selected"
+                    Unselected="IsAnonFilter_Selected" />
                 <ListBoxItem
                     x:Name="FileNameFilter"
                     Content="FileName"

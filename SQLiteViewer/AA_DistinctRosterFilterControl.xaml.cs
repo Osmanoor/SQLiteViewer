@@ -48,7 +48,7 @@ namespace SQLiteViewer
             dbManager = new DatabaseManager(dbPath);
 
             // Initialize paged data collection
-            OriginalData = dbManager.FilterAndPaginateDistinctRoster(fileName:"",replayDate:null,displayName:null,minLvl:null,maxLvl:null,orderBy:null,ascending:true,pageNumber:0,pageSize:10);
+            OriginalData = new ObservableCollection<AA_DistinctRoster>();
             FilteredData = new ObservableCollection<AA_DistinctRoster>(OriginalData);
             _pagedData = new ObservableCollection<AA_DistinctRoster>();
 
@@ -66,7 +66,8 @@ namespace SQLiteViewer
                 return;
 
             _pagedData.Clear();
-            var pageData = dbManager.FilterAndPaginateDistinctRoster(fileName: "", replayDate: null, displayName: null, minLvl: null, maxLvl: null, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex, pageSize: _pageSize);
+            (var pageData,var total_rows) = dbManager.FilterAndPaginateDistinctRoster(fileName: "", replayDate: null, displayName: null, minLvl: null, maxLvl: null, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex, pageSize: _pageSize);
+            _totalPages = ((total_rows + _pageSize - 1) / _pageSize);  // Rounded up division
 
             foreach (var item in pageData)
             {

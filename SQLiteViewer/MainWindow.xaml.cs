@@ -238,6 +238,7 @@ namespace SQLiteViewer
 
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
+            //Settings.Default.Reset();
             Application.Current.Shutdown();
         }
 
@@ -260,6 +261,8 @@ namespace SQLiteViewer
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            //Settings.Default.Reset();
+
             Application.Current.Shutdown();
         }
 

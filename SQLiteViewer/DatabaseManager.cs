@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.IO;
 
 namespace SQLiteViewer  // Replace with your actual project namespace if different
@@ -21,7 +22,7 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
             {
                 connection.Open();
 
-                string query = $"SELECT COUNT(*) FROM {tableName}";
+                string query = $"PRAGMA cache_size = -100000; PRAGMA synchronous = OFF; SELECT COUNT(*) FROM {tableName}";
 
                 using (var command = new SqliteCommand(query, connection))
                 {
@@ -31,10 +32,11 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
 
             return rowCount;
         }
-        public ObservableCollection<AA_BetterReplays> FilterAndPaginateBetterReplays(
+        public (ObservableCollection<AA_BetterReplays>,int) FilterAndPaginateBetterReplays(
             string teammate, string playlist,
             string orderBy, bool ascending, int pageNumber, int pageSize)
         {
+            var total_rows = 0;
             var replays = new ObservableCollection<AA_BetterReplays>();
             using (var connection = new SqliteConnection(connectionString))
             {
@@ -42,7 +44,7 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 var command = connection.CreateCommand();
 
                 // Base query
-                command.CommandText = "SELECT * FROM AA_BetterReplays WHERE 1 = 1";
+                command.CommandText = "PRAGMA cache_size = -1000000; PRAGMA synchronous = OFF; SELECT * FROM AA_BetterReplays WHERE 1 = 1";
 
                 // Add filters dynamically
                 if (!string.IsNullOrEmpty(teammate))
@@ -56,12 +58,36 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                     command.Parameters.AddWithValue("@playlist", $"%{playlist}%");
                 }
 
+
                 // Sorting
                 if (!string.IsNullOrEmpty(orderBy))
                 {
                     command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
                 }
+                var command2 = connection.CreateCommand();
+                command2.CommandText = command.CommandText.Replace("*", "COUNT(*)");
+                command2.CommandType = command.CommandType;
+                command2.Transaction = command.Transaction;
+                foreach (SqliteParameter parameter in command.Parameters)
+                {
+                    var newParameter = new SqliteParameter
+                    {
+                        ParameterName = parameter.ParameterName,
+                        Value = parameter.Value,
+                        DbType = parameter.DbType,
+                        Direction = parameter.Direction,
+                        Size = parameter.Size,
+                        IsNullable = parameter.IsNullable
+                    };
 
+                    command2.Parameters.Add(newParameter);
+                }
+                var resutl = command2.ExecuteScalar();
+                if (resutl != null)
+                {
+                    total_rows = int.Parse(resutl.ToString());
+                }
+                
                 // Pagination
                 command.CommandText += " LIMIT @pageSize OFFSET @offset";
                 command.Parameters.AddWithValue("@pageSize", pageSize);
@@ -89,12 +115,13 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 }
             }
 
-            return replays;
+            return (replays,total_rows);
         }
-        public ObservableCollection<AA_DistinctRoster> FilterAndPaginateDistinctRoster(
+        public (ObservableCollection<AA_DistinctRoster>, int) FilterAndPaginateDistinctRoster(
             string fileName, DateTime? replayDate, string displayName, int? minLvl, int? maxLvl,
             string orderBy, bool ascending, int pageNumber, int pageSize)
         {
+            var total_rows = 0;
             var replays = new ObservableCollection<AA_DistinctRoster>();
             using (var connection = new SqliteConnection(connectionString))
             {
@@ -102,7 +129,7 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 var command = connection.CreateCommand();
 
                 // Base query
-                command.CommandText = "SELECT * FROM AA_DistinctRoster WHERE 1 = 1";
+                command.CommandText = "PRAGMA cache_size = -1000000; PRAGMA synchronous = OFF; SELECT * FROM AA_DistinctRoster WHERE 1 = 1";
 
                 // Add filters dynamically
                 if (!string.IsNullOrEmpty(fileName))
@@ -140,7 +167,29 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 {
                     command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
                 }
+                var command2 = connection.CreateCommand();
+                command2.CommandText = command.CommandText.Replace("*", "COUNT(*)");
+                command2.CommandType = command.CommandType;
+                command2.Transaction = command.Transaction;
+                foreach (SqliteParameter parameter in command.Parameters)
+                {
+                    var newParameter = new SqliteParameter
+                    {
+                        ParameterName = parameter.ParameterName,
+                        Value = parameter.Value,
+                        DbType = parameter.DbType,
+                        Direction = parameter.Direction,
+                        Size = parameter.Size,
+                        IsNullable = parameter.IsNullable
+                    };
 
+                    command2.Parameters.Add(newParameter);
+                }
+                var resutl = command2.ExecuteScalar();
+                if (resutl != null)
+                {
+                    total_rows = int.Parse(resutl.ToString());
+                }
                 // Pagination
                 command.CommandText += " LIMIT @pageSize OFFSET @offset";
                 command.Parameters.AddWithValue("@pageSize", pageSize);
@@ -176,12 +225,14 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 }
             }
 
-            return replays;
+            return (replays,total_rows);
         }
-        public ObservableCollection<A_RosterWithCount> FilterAndPaginateRosterWithCount(
+        public (ObservableCollection<A_RosterWithCount>,int) FilterAndPaginateRosterWithCount(
             string fileName, DateTime? replayDate, string displayName, string isBot, string isTeam, string isAnon,
             string orderBy, bool ascending, int pageNumber, int pageSize)
         {
+            string roastercommand = "SELECT \r\n    RV.item_number AS Num,  -- Adding the item_number column from the zReplayView\r\n    A.replayDate AS Date, \r\n    A.playlist,\r\n    LR.playerId,\r\n    LR.displayName,\r\n    LR.level AS Lvl,\r\n    LR.placement AS Place, \r\n    LR.anonymous AS Anon,\r\n    LR.platform,\r\n    LR.teamIndex AS Team,\r\n    LR.kills AS Kills,\r\n    BK.bot_kills AS BotKills,\r\n    LR.crowns,\r\n    COALESCE(\r\n        (\r\n            SELECT displayName\r\n            FROM (\r\n                SELECT \r\n                    displayName,\r\n                    ROW_NUMBER() OVER (PARTITION BY LR.fileName, LR.teamIndex ORDER BY placement DESC) AS rn\r\n                FROM Roster\r\n                WHERE LR.fileName = fileName\r\n                  AND LR.teamIndex = teamIndex\r\n                  AND displayName <> LR.displayName\r\n            ) AS Subquery\r\n            WHERE rn = 1\r\n        ), 'No Teammate'\r\n    ) AS TeamMate,\r\n\tLR.isBot,\r\n    LR.skin, \r\n    (\r\n        SELECT COUNT(*)\r\n        FROM Roster\r\n        WHERE \r\n            playerId = LR.playerId \r\n            AND isBot < 1\r\n    ) AS Count,\r\n    \r\n    SUM(\r\n        CASE \r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actionerId AND tm.fileName = kf.fileName\r\n                WHERE kf.actioneeId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer = 1\r\n            ) THEN 1\r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actionerId AND tm.fileName = kf.fileName\r\n                WHERE kf.actioneeId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer != 1\r\n            ) THEN 2\r\n            ELSE 0\r\n        END\r\n    ) AS MetK,\r\n    \r\n    SUM(\r\n        CASE \r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actioneeId AND tm.fileName = kf.fileName\r\n                WHERE kf.actionerId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer = 1\r\n            ) THEN 1\r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actioneeId AND tm.fileName = kf.fileName\r\n                WHERE kf.actionerId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer != 1\r\n            ) THEN 2\r\n            ELSE 0\r\n        END\r\n    ) AS MetD,\r\n    \r\n    -- Adding the new is_team column\r\n    CASE\r\n        WHEN EXISTS (\r\n            SELECT 1\r\n            FROM Teammates tm\r\n            WHERE tm.playerId = LR.playerId\r\n              AND tm.fileName = LR.fileName\r\n        ) THEN 1\r\n        ELSE 0\r\n    END AS isTeam,\r\n    \r\n    A.season,\r\n    LR.fileName AS fileName\r\nFROM \r\n    Roster LR\r\nJOIN \r\n    Replays A ON LR.fileName = A.fileName\r\nLEFT JOIN \r\n    BotKills BK ON LR.fileName = BK.fileName AND LR.playerId = BK.actionerId\r\nJOIN \r\n    zReplayView RV ON LR.fileName = RV.fileName\r\n WHERECommandC# \r\nGROUP BY \r\n    A.replayDate, A.playlist, LR.displayName, LR.kills, LR.level, LR.placement, LR.anonymous, LR.teamIndex, LR.isBot, LR.crowns, LR.skin, RV.item_number";
+            var total_rows = 0;
             var replays = new ObservableCollection<A_RosterWithCount>();
             using (var connection = new SqliteConnection(connectionString))
             {
@@ -189,12 +240,12 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 var command = connection.CreateCommand();
 
                 // Base query
-                command.CommandText = "SELECT * FROM A_RosterWithCount WHERE 1 = 1";
+                command.CommandText = "WHERE 1 = 1";
 
                 // Add filters dynamically
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    command.CommandText += " AND fileName LIKE @fileName";
+                    command.CommandText += " AND LR.fileName LIKE @fileName";
                     command.Parameters.AddWithValue("@fileName", $"%{fileName}%");
                 }
 
@@ -223,17 +274,44 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                     command.CommandText += $" AND Anon = {isAnon}";
                 }
 
+                var command2 = connection.CreateCommand();
+                command2.CommandText = roastercommand.Replace("WHERECommandC#", command.CommandText);
+                command2.CommandText = command2.CommandText.Replace("    RV.item_number AS Num,  -- Adding the item_number column from the zReplayView\r\n    A.replayDate AS Date, \r\n    A.playlist,\r\n    LR.playerId,\r\n    LR.displayName,\r\n    LR.level AS Lvl,\r\n    LR.placement AS Place, \r\n    LR.anonymous AS Anon,\r\n    LR.platform,\r\n    LR.teamIndex AS Team,\r\n    LR.kills AS Kills,\r\n    BK.bot_kills AS BotKills,\r\n    LR.crowns,\r\n    COALESCE(\r\n        (\r\n            SELECT displayName\r\n            FROM (\r\n                SELECT \r\n                    displayName,\r\n                    ROW_NUMBER() OVER (PARTITION BY LR.fileName, LR.teamIndex ORDER BY placement DESC) AS rn\r\n                FROM Roster\r\n                WHERE LR.fileName = fileName\r\n                  AND LR.teamIndex = teamIndex\r\n                  AND displayName <> LR.displayName\r\n            ) AS Subquery\r\n            WHERE rn = 1\r\n        ), 'No Teammate'\r\n    ) AS TeamMate,\r\n\tLR.isBot,\r\n    LR.skin, \r\n    (\r\n        SELECT COUNT(*)\r\n        FROM Roster\r\n        WHERE \r\n            playerId = LR.playerId \r\n            AND isBot < 1\r\n    ) AS Count,\r\n    \r\n    SUM(\r\n        CASE \r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actionerId AND tm.fileName = kf.fileName\r\n                WHERE kf.actioneeId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer = 1\r\n            ) THEN 1\r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actionerId AND tm.fileName = kf.fileName\r\n                WHERE kf.actioneeId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer != 1\r\n            ) THEN 2\r\n            ELSE 0\r\n        END\r\n    ) AS MetK,\r\n    \r\n    SUM(\r\n        CASE \r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actioneeId AND tm.fileName = kf.fileName\r\n                WHERE kf.actionerId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer = 1\r\n            ) THEN 1\r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actioneeId AND tm.fileName = kf.fileName\r\n                WHERE kf.actionerId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer != 1\r\n            ) THEN 2\r\n            ELSE 0\r\n        END\r\n    ) AS MetD,\r\n    \r\n    -- Adding the new is_team column\r\n    CASE\r\n        WHEN EXISTS (\r\n            SELECT 1\r\n            FROM Teammates tm\r\n            WHERE tm.playerId = LR.playerId\r\n              AND tm.fileName = LR.fileName\r\n        ) THEN 1\r\n        ELSE 0\r\n    END AS isTeam,\r\n    \r\n    A.season,\r\n    LR.fileName AS fileName", "    RV.item_number AS Num,  -- Adding the item_number column from the zReplayView\r\n    A.replayDate AS Date, \r\n    LR.level AS Lvl,\r\n    LR.placement AS Place, \r\n    LR.anonymous AS Anon,\r\n    LR.teamIndex AS Team,\r\n    LR.kills AS Kills,\r\n    BK.bot_kills AS BotKills,\r\n\tLR.isBot,\r\n    LR.skin, \r\n    CASE\r\n        WHEN EXISTS (\r\n            SELECT 1\r\n            FROM Teammates tm\r\n            WHERE tm.playerId = LR.playerId\r\n              AND tm.fileName = LR.fileName\r\n        ) THEN 1\r\n        ELSE 0\r\n    END AS isTeam,\r\n    A.season,\r\n    LR.fileName AS fileName");
+                command2.CommandType = command.CommandType;
+                command2.Transaction = command.Transaction;
+                foreach (SqliteParameter parameter in command.Parameters)
+                {
+                    var newParameter = new SqliteParameter
+                    {
+                        ParameterName = parameter.ParameterName,
+                        Value = parameter.Value,
+                        DbType = parameter.DbType,
+                        Direction = parameter.Direction,
+                        Size = parameter.Size,
+                        IsNullable = parameter.IsNullable
+                    };
+
+                    command2.Parameters.Add(newParameter);
+                }
+                var result = command2.ExecuteReader();
+                while (result.Read())
+                {
+                    total_rows++;
+                }
+
+                result.Close();
+
                 // Sorting
                 if (!string.IsNullOrEmpty(orderBy))
                 {
                     command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
                 }
-
                 // Pagination
-                command.CommandText += " LIMIT @pageSize OFFSET @offset";
+                //command.CommandText += " LIMIT @pageSize OFFSET @offset";
+                roastercommand += "\r\nLIMIT @pageSize OFFSET @offset";
                 command.Parameters.AddWithValue("@pageSize", pageSize);
                 command.Parameters.AddWithValue("@offset", (pageNumber) * pageSize);
-
+                command.CommandText = roastercommand.Replace("WHERECommandC#", command.CommandText);
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -265,12 +343,13 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 }
             }
 
-            return replays;
+            return (replays, total_rows);
         }
-        public ObservableCollection<BetterKillfeed> FilterAndPaginateBetterKillFeed(
+        public (ObservableCollection<BetterKillfeed>,int) FilterAndPaginateBetterKillFeed(
             string fileName, string actioner, string actionee,
             string orderBy, bool ascending, int pageNumber, int pageSize)
         {
+            var total_rows = 0;
             var replays = new ObservableCollection<BetterKillfeed>();
             using (var connection = new SqliteConnection(connectionString))
             {
@@ -278,7 +357,7 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 var command = connection.CreateCommand();
 
                 // Base query
-                command.CommandText = "SELECT * FROM BetterKillfeed WHERE 1 = 1";
+                command.CommandText = "PRAGMA cache_size = -1000000; PRAGMA synchronous = OFF; SELECT * FROM BetterKillfeed WHERE 1 = 1";
 
                 // Add filters dynamically
                 if (!string.IsNullOrEmpty(fileName))
@@ -301,7 +380,29 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 {
                     command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
                 }
+                var command2 = connection.CreateCommand();
+                command2.CommandText = command.CommandText.Replace("*", "COUNT(*)");
+                command2.CommandType = command.CommandType;
+                command2.Transaction = command.Transaction;
+                foreach (SqliteParameter parameter in command.Parameters)
+                {
+                    var newParameter = new SqliteParameter
+                    {
+                        ParameterName = parameter.ParameterName,
+                        Value = parameter.Value,
+                        DbType = parameter.DbType,
+                        Direction = parameter.Direction,
+                        Size = parameter.Size,
+                        IsNullable = parameter.IsNullable
+                    };
 
+                    command2.Parameters.Add(newParameter);
+                }
+                var resutl = command2.ExecuteScalar();
+                if (resutl != null)
+                {
+                    total_rows = int.Parse(resutl.ToString());
+                }
                 // Pagination
                 command.CommandText += " LIMIT @pageSize OFFSET @offset";
                 command.Parameters.AddWithValue("@pageSize", pageSize);
@@ -333,7 +434,7 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 }
             }
 
-            return replays;
+            return (replays,total_rows);
         }
         public ObservableCollection<AA_BetterReplays> GetAllReplays()
         {
@@ -443,5 +544,6 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
             }
             return replays;
         }
+
     }
 }

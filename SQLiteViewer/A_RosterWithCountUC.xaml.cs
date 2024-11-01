@@ -34,6 +34,8 @@ namespace SQLiteViewer
         private ObservableCollection<A_RosterWithCount> OriginalData;
         private readonly DatabaseManager dbManager;
 
+        private bool first = true;
+
         private int _pageSize = 10;
         private int _currentPageIndex = 0;
         private int _totalPages;
@@ -51,14 +53,7 @@ namespace SQLiteViewer
             InitializeComponent();
             this.DataContext = this;
 
-            if (fileName != "")
-            {
-                ApplyFileNameFilter(fileName);
-            }
-            if (replayDate != null)
-            {
-                ApplyReplayDateFilter(replayDate.Value);
-            }
+            
             
             // Initialize SQLitePCL.Batteries
             Batteries_V2.Init();
@@ -67,24 +62,56 @@ namespace SQLiteViewer
 
             // Initialize paged data collection
             OriginalData = new ObservableCollection<A_RosterWithCount>();
-            FilteredData = new ObservableCollection<A_RosterWithCount>(OriginalData);
+            FilteredData = new ObservableCollection<A_RosterWithCount>();
             _pagedData = new ObservableCollection<A_RosterWithCount>();
 
             // Calculate total pages
             _totalPages = ((dbManager.GetRowCount("A_RosterWithCount") + _pageSize - 1) / _pageSize);  // Rounded up division
 
+            
+
+            if (fileName != "")
+            {
+                ApplyFileNameFilter(fileName);
+            }
+            else
+            {
+                if (Settings.Default.FileNameFilter != "")
+                {
+                    ApplyFileNameFilter(Settings.Default.FileNameFilter);
+                }
+            }
+            if (replayDate != null)
+            {
+                ApplyReplayDateFilter(replayDate.Value);
+            }
+            else
+            {
+                if (Settings.Default.ReplayDateFilter.Date.Year != 1)
+                {
+                    ApplyReplayDateFilter(Settings.Default.ReplayDateFilter);
+                }
+            }
+            if (Settings.Default.DisplayNameFilter != "")
+            {
+                ApplyDisplayNameFilter(Settings.Default.DisplayNameFilter);
+            }
+
             // Display the first page
-            LoadPage(0);
+          //  LoadPage(0);
         }
 
         // Method to load a specific page
         private void LoadPage(int pageIndex)
         {
-            if (pageIndex < 0 || pageIndex >= _totalPages)
+            if (pageIndex < 0 )
                 return;
 
             _pagedData.Clear();
-            var pageData = dbManager.FilterAndPaginateRosterWithCount(fileName: _fileName, replayDate: _replayDate, displayName: _displayName, isBot:_isBot, isTeam:_isTeam,isAnon:_isAnon, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex , pageSize: _pageSize);
+            (var pageData, var total_rows) = dbManager.FilterAndPaginateRosterWithCount(fileName: _fileName, replayDate: _replayDate, displayName: _displayName, isBot:_isBot, isTeam:_isTeam,isAnon:_isAnon, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex , pageSize: _pageSize);
+
+            // Calculate total pages
+            _totalPages = ((total_rows + _pageSize - 1) / _pageSize);  // Rounded up division
 
             foreach (var item in pageData)
             {
@@ -95,11 +122,11 @@ namespace SQLiteViewer
                 }
                 if (item.MetD == "1")
                 {
-                    bitmaps.Add( new Bitmap(LoadBitmapFromByteArray(Properties.Resources.glow)));
+                    bitmaps.Add( new Bitmap(LoadBitmapFromByteArray(Properties.Resources.redglow)));
                 }
                 if (item.MetD == "2")
                 {
-                    bitmaps.Add(new Bitmap(LoadBitmapFromByteArray(Properties.Resources.redglow)));
+                    bitmaps.Add(new Bitmap(LoadBitmapFromByteArray(Properties.Resources.glow)));
                 }
                 if (item.MetK == "1")
                 {
@@ -158,9 +185,18 @@ namespace SQLiteViewer
         {
             try
             {
+                if (first)
+                {
+                    return;
+                }
                 _isBot = IsBotFilter != null && IsBotFilter.IsSelected ? "1" : "";
                 _isTeam = IsTeamFilter != null && IsTeamFilter.IsSelected ? "1" : "";
                 _isAnon = IsAnonFilter != null && IsAnonFilter.IsSelected ? "1" : "";
+
+                if (IsBotFilter != null) Settings.Default.IsBotFilter = IsBotFilter.IsSelected;
+                if (IsTeamFilter != null) Settings.Default.IsTeamFilter = IsTeamFilter.IsSelected;
+                if (IsAnonFilter != null) Settings.Default.IsAnonFilter = IsAnonFilter.IsSelected;
+                Settings.Default.Save();
                 LoadPage(0);
             }
             catch (Exception ex)
@@ -178,6 +214,15 @@ namespace SQLiteViewer
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
+            
+            IsBotFilter.IsSelected = Settings.Default.IsBotFilter;
+            _isBot = IsBotFilter.IsSelected ? "1" : "";
+            IsTeamFilter.IsSelected = Settings.Default.IsTeamFilter;
+            _isTeam = IsTeamFilter.IsSelected ? "1" : "";
+            IsAnonFilter.IsSelected = Settings.Default.IsAnonFilter;
+            _isAnon = IsAnonFilter.IsSelected ? "1" : "";
+            first = false;
+            LoadPage(0);
         }
 
         private void DataGridView_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -237,14 +282,17 @@ namespace SQLiteViewer
                     {
                         case "DisplayName":
                             ApplyDisplayNameFilter(cellInfo.PlayerId);  // Assuming Teammates is a string
+                            LoadPage(0);
                             break;
 
                         case "FileName":
                             ApplyFileNameFilter(cellInfo.FileName);  // Assuming FileName is a string
+                            LoadPage(0);
                             break;
 
                         case "Date":
                             ApplyReplayDateFilter(cellInfo.Date);  // Assuming ReplayDate is a DateTime
+                            LoadPage(0);
                             break;
 
                         case "Kills":
@@ -267,7 +315,9 @@ namespace SQLiteViewer
             FileNameFilter.Visibility = Visibility.Visible;
             FileNameFilter.Content = $"FileName: {fileNameValue}";
             FileNameFilter.IsSelected = true;
-            LoadPage(0);
+            Settings.Default.FileNameFilter = fileNameValue;
+            Settings.Default.Save();
+            
         }
         private void ApplyReplayDateFilter(DateTime replayDateValue)
         {
@@ -275,7 +325,8 @@ namespace SQLiteViewer
             ReplayDateFilter.Visibility = Visibility.Visible;
             ReplayDateFilter.Content = $"Date: {replayDateValue}";
             ReplayDateFilter.IsSelected = true;
-            LoadPage(0);
+            Settings.Default.ReplayDateFilter = replayDateValue;
+            Settings.Default.Save();
         }
         private void ApplyDisplayNameFilter(string displayNameValue)
         {
@@ -283,12 +334,15 @@ namespace SQLiteViewer
             DisplayNameFilter.Visibility = Visibility.Visible;
             DisplayNameFilter.Content = $"PlayerID: {displayNameValue}";
             DisplayNameFilter.IsSelected = true;
-            LoadPage(0);
+            Settings.Default.DisplayNameFilter = displayNameValue;
+            Settings.Default.Save();
         }
         private void FileNameFilter_Unselected(object sender, RoutedEventArgs e)
         {
             FileNameFilter.Visibility = Visibility.Collapsed;
             _fileName = "";
+            Settings.Default.FileNameFilter = "";
+            Settings.Default.Save();
             LoadPage(0);
         }
 
@@ -296,6 +350,8 @@ namespace SQLiteViewer
         {
             ReplayDateFilter.Visibility = Visibility.Collapsed;
             _replayDate = null;
+            Settings.Default.ReplayDateFilter = new DateTime();
+            Settings.Default.Save();
             LoadPage(0);
         }
 
@@ -303,6 +359,8 @@ namespace SQLiteViewer
         {
             DisplayNameFilter.Visibility = Visibility.Collapsed;
             _displayName = "";
+            Settings.Default.DisplayNameFilter = "";
+            Settings.Default.Save();
             LoadPage(0);
         }
         private static Bitmap Merge(List<Bitmap> images)
@@ -362,5 +420,37 @@ namespace SQLiteViewer
                 return new Bitmap(memoryStream);
             }
         }
+
+        private void IsBotFilter_Selected(object sender, RoutedEventArgs e)
+        {
+            if (first) return;
+            _isBot = IsBotFilter != null && IsBotFilter.IsSelected ? "1" : "";
+
+
+            if (IsBotFilter != null) Settings.Default.IsBotFilter = IsBotFilter.IsSelected;
+
+            Settings.Default.Save();
+            LoadPage(0);
+        }
+
+        private void IsTeamFilter_Selected(object sender, RoutedEventArgs e)
+        {
+            if (first) return;
+            _isTeam = IsTeamFilter != null && IsTeamFilter.IsSelected ? "1" : "";
+
+            if (IsTeamFilter != null) Settings.Default.IsTeamFilter = IsTeamFilter.IsSelected;
+            Settings.Default.Save();
+            LoadPage(0);
+        }
+
+        private void IsAnonFilter_Selected(object sender, RoutedEventArgs e)
+        {
+            if (first) return;
+            _isAnon = IsAnonFilter != null && IsAnonFilter.IsSelected ? "1" : "";
+            if (IsAnonFilter != null) Settings.Default.IsAnonFilter = IsAnonFilter.IsSelected;
+            Settings.Default.Save();
+            LoadPage(0);
+        }
+
     }
 }

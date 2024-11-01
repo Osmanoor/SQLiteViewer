@@ -45,31 +45,55 @@ namespace SQLiteViewer
         {
             InitializeComponent();
             this.DataContext = this;
-            if (fileName != "")
-            {
-                ApplyFileNameFilter(fileName);
-            }
-            if (actioner != "")
-            {
-                ApplyActionerFilter(actioner);
-            }
-            if (actionee != "")
-            {
-                ApplyActioneeFilter(actionee);
-            }
+            
             // Initialize SQLitePCL.Batteries
             Batteries_V2.Init();
             string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database.db");
             dbManager = new DatabaseManager(dbPath);
 
             // Initialize paged data collection
-            OriginalData = dbManager.FilterAndPaginateBetterKillFeed(fileName:_fileName,actioner:_actioner,actionee:_actionee,orderBy:_orderBy,ascending:_ascending,pageNumber:0,pageSize:_pageSize);
+            OriginalData = new ObservableCollection<BetterKillfeed>();
             FilteredData = new ObservableCollection<BetterKillfeed>(OriginalData);
             _pagedData = new ObservableCollection<BetterKillfeed>();
 
             // Calculate total pages
             _totalPages = (dbManager.GetRowCount("BetterKillfeed") + _pageSize - 1) / _pageSize;  // Rounded up division
 
+           
+
+            if (fileName != "")
+            {
+                ApplyFileNameFilter(fileName);
+            }
+            else
+            {
+                if (Settings.Default.FileNameFilter != "")
+                {
+                    ApplyFileNameFilter(Settings.Default.FileNameFilter);
+                }
+            }
+            if (actioner != "")
+            {
+                ApplyActionerFilter(actioner);
+            }
+            else
+            {
+                if (Settings.Default.ActionerFilter != "" && actionee == "" && Settings.Default.FileNameFilter != "")
+                {
+                    ApplyActionerFilter(Settings.Default.ActionerFilter);
+                }
+            }
+            if (actionee != "")
+            {
+                ApplyActioneeFilter(actionee);
+            }
+            else
+            {
+                if (Settings.Default.ActioneeFilter != "" && actioner == "" && Settings.Default.FileNameFilter != "")
+                {
+                    ApplyActioneeFilter(Settings.Default.ActioneeFilter);
+                }
+            }
             // Display the first page
             LoadPage(0);
         }
@@ -77,11 +101,13 @@ namespace SQLiteViewer
         // Method to load a specific page
         private void LoadPage(int pageIndex)
         {
-            if (pageIndex < 0 || pageIndex >= _totalPages)
+            if (pageIndex < 0 )
                 return;
 
             _pagedData.Clear();
-            var pageData = dbManager.FilterAndPaginateBetterKillFeed(fileName: _fileName, actioner: _actioner, actionee: _actionee, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex, pageSize: _pageSize);
+            (var pageData,var total_rows) = dbManager.FilterAndPaginateBetterKillFeed(fileName: _fileName, actioner: _actioner, actionee: _actionee, orderBy: _orderBy, ascending: _ascending, pageNumber: pageIndex, pageSize: _pageSize);
+            
+            _totalPages = (total_rows + _pageSize - 1) / _pageSize;  // Rounded up division
 
             foreach (var item in pageData)
             {
@@ -237,14 +263,17 @@ namespace SQLiteViewer
                     {
                         case "FileName":
                             ApplyFileNameFilter(cellInfo.FileName);  // Assuming Playlist is a string
+                            LoadPage(0);
                             break;
 
                         case "ActionerId":
                             ApplyActionerFilter(cellInfo.ActionerId);  // Assuming Teammates is a string
+                            LoadPage(0);
                             break;
 
                         case "ActioneeId":
                             ApplyActioneeFilter(cellInfo.ActioneeId);  // Assuming FileName is a string
+                            LoadPage(0);
                             break;
 
                         case "ReplayDate":
@@ -261,7 +290,8 @@ namespace SQLiteViewer
             fileNameFilter.Visibility = Visibility.Visible;
             fileNameFilter.Content = $"FileName: {fileNameValue}";
             fileNameFilter.IsSelected = true;
-            LoadPage(0);
+            Settings.Default.FileNameFilter = fileNameValue;
+            Settings.Default.Save();
         }
         private void ApplyActionerFilter(string actionerValue)
         {
@@ -269,7 +299,8 @@ namespace SQLiteViewer
             ActionerFilter.Visibility = Visibility.Visible;
             ActionerFilter.Content =  $"ActionerID: {actionerValue}";
             ActionerFilter.IsSelected = true;
-            LoadPage(0);
+            Settings.Default.ActionerFilter = actionerValue;
+            Settings.Default.Save();
         }
         private void ApplyActioneeFilter(string actioneeValue)
         {
@@ -277,13 +308,16 @@ namespace SQLiteViewer
             ActioneeFilter.Visibility = Visibility.Visible;
             ActioneeFilter.Content = $"ActioneeID: {actioneeValue}";
             ActioneeFilter.IsSelected = true;
-            LoadPage(0);
+            Settings.Default.ActioneeFilter = actioneeValue;
+            Settings.Default.Save();
         }
 
         private void fileNameFilter_Unselected(object sender, RoutedEventArgs e)
         {
             fileNameFilter.Visibility = Visibility.Collapsed;
             _fileName = "";
+            Settings.Default.FileNameFilter = "";
+            Settings.Default.Save();
             LoadPage(0);
         }
 
@@ -291,6 +325,8 @@ namespace SQLiteViewer
         {
             ActionerFilter.Visibility = Visibility.Collapsed;
             _actioner = "";
+            Settings.Default.ActionerFilter = "";
+            Settings.Default.Save();
             LoadPage(0);
         }
 
@@ -298,6 +334,8 @@ namespace SQLiteViewer
         {
             ActioneeFilter.Visibility = Visibility.Collapsed;
             _actionee = "";
+            Settings.Default.ActioneeFilter = "";
+            Settings.Default.Save();
             LoadPage(0);
         }
     }

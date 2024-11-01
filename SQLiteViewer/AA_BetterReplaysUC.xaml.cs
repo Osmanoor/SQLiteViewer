@@ -51,7 +51,7 @@ namespace SQLiteViewer
             dbManager = new DatabaseManager(dbPath);
 
             // Initialize paged data collection
-            originalReplays = dbManager.FilterAndPaginateBetterReplays(teammate:"",playlist:"",orderBy:_orderBy,ascending:_ascending,0,_pageSize);
+            originalReplays = new ObservableCollection<AA_BetterReplays>();
             Replays = new ObservableCollection<AA_BetterReplays>(originalReplays);
             _pagedDataCollection = new ObservableCollection<AA_BetterReplays>();
 
@@ -69,7 +69,8 @@ namespace SQLiteViewer
                 return;
 
             _pagedDataCollection.Clear();
-            var pageData = dbManager.FilterAndPaginateBetterReplays(teammate: _teammate, playlist: _playlist, orderBy: _orderBy, ascending: _ascending, pageIndex, _pageSize);
+            (var pageData,var total_rows) = dbManager.FilterAndPaginateBetterReplays(teammate: _teammate, playlist: _playlist, orderBy: _orderBy, ascending: _ascending, pageIndex, _pageSize);
+            _totalPages = ((total_rows + _pageSize - 1) / _pageSize);  // Rounded up division
 
             foreach (var item in pageData)
             {

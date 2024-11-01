@@ -260,5 +260,100 @@ namespace SQLiteViewer.Properties {
                 this["POITextBox"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsBotFilter {
+            get {
+                return ((bool)(this["IsBotFilter"]));
+            }
+            set {
+                this["IsBotFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsTeamFilter {
+            get {
+                return ((bool)(this["IsTeamFilter"]));
+            }
+            set {
+                this["IsTeamFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsAnonFilter {
+            get {
+                return ((bool)(this["IsAnonFilter"]));
+            }
+            set {
+                this["IsAnonFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FileNameFilter {
+            get {
+                return ((string)(this["FileNameFilter"]));
+            }
+            set {
+                this["FileNameFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime ReplayDateFilter {
+            get {
+                return ((global::System.DateTime)(this["ReplayDateFilter"]));
+            }
+            set {
+                this["ReplayDateFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DisplayNameFilter {
+            get {
+                return ((string)(this["DisplayNameFilter"]));
+            }
+            set {
+                this["DisplayNameFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ActionerFilter {
+            get {
+                return ((string)(this["ActionerFilter"]));
+            }
+            set {
+                this["ActionerFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ActioneeFilter {
+            get {
+                return ((string)(this["ActioneeFilter"]));
+            }
+            set {
+                this["ActioneeFilter"] = value;
+            }
+        }
     }
 }
