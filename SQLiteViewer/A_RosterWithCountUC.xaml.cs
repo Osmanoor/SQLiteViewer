@@ -102,6 +102,136 @@ namespace SQLiteViewer
         }
 
         // Method to load a specific page
+        private class ImageOverlayProcessor
+        {
+            private readonly Dictionary<string, string> _overlayPaths;
+
+            public ImageOverlayProcessor()
+            {
+                string overlayDirectory = Path.Combine(Environment.CurrentDirectory, "Overlays");
+                _overlayPaths = new Dictionary<string, string>
+            {
+                { "redX", Path.Combine(overlayDirectory, "redX.png") },
+                { "blueX", Path.Combine(overlayDirectory, "blueX.png") },
+                { "redGlow", Path.Combine(overlayDirectory, "redglow.png") },
+                { "blueGlow", Path.Combine(overlayDirectory, "blueglow.png") },
+                { "ghost", Path.Combine(overlayDirectory, "ghost.png") }
+            };
+            }
+
+            public string ApplyOverlays(string basePath, string metK, string metD, int anon)
+            {
+                if (!File.Exists(basePath))
+                {
+                    Debug.WriteLine($"Base image not found: {basePath}");
+                    return basePath;
+                }
+
+                try
+                {
+                    // Create a new unique filename for the overlay image
+                    string outputPath = Path.Combine(
+                        Path.GetDirectoryName(basePath),
+                        Path.GetFileNameWithoutExtension(basePath) + "_overlay.png"
+                    );
+
+                    // Load the base image
+                    BitmapImage baseImage = new BitmapImage();
+                    baseImage.BeginInit();
+                    baseImage.CacheOption = BitmapCacheOption.OnLoad;
+                    baseImage.UriSource = new Uri(basePath);
+                    baseImage.EndInit();
+
+                    // Create the drawing visual
+                    DrawingVisual drawingVisual = new DrawingVisual();
+                    using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+                    {
+                        // Draw the base image
+                        drawingContext.DrawImage(baseImage, new Rect(0, 0, baseImage.PixelWidth, baseImage.PixelHeight));
+
+                        // Debug information
+                        Debug.WriteLine($"Processing overlays for {Path.GetFileName(basePath)}");
+                        Debug.WriteLine($"MetK: {metK}, MetD: {metD}, Anon: {anon}");
+
+                        // Apply overlays based on conditions
+                        if (metK == "1" && File.Exists(_overlayPaths["redX"]))
+                        {
+                            Debug.WriteLine("Applying redX overlay");
+                            ApplyOverlay(drawingContext, _overlayPaths["redX"], baseImage.PixelWidth, baseImage.PixelHeight);
+                        }
+                        else if (metK == "2" && File.Exists(_overlayPaths["blueX"]))
+                        {
+                            Debug.WriteLine("Applying blueX overlay");
+                            ApplyOverlay(drawingContext, _overlayPaths["blueX"], baseImage.PixelWidth, baseImage.PixelHeight);
+                        }
+
+                        if (metD == "1" && File.Exists(_overlayPaths["redGlow"]))
+                        {
+                            Debug.WriteLine("Applying redGlow overlay");
+                            ApplyOverlay(drawingContext, _overlayPaths["redGlow"], baseImage.PixelWidth, baseImage.PixelHeight);
+                        }
+                        else if (metD == "2" && File.Exists(_overlayPaths["blueGlow"]))
+                        {
+                            Debug.WriteLine("Applying blueGlow overlay");
+                            ApplyOverlay(drawingContext, _overlayPaths["blueGlow"], baseImage.PixelWidth, baseImage.PixelHeight);
+                        }
+
+                        if (anon == 1 && File.Exists(_overlayPaths["ghost"]))
+                        {
+                            Debug.WriteLine("Applying ghost overlay");
+                            ApplyOverlay(drawingContext, _overlayPaths["ghost"], baseImage.PixelWidth, baseImage.PixelHeight);
+                        }
+                    }
+
+                    // Create a render target bitmap
+                    RenderTargetBitmap renderBitmap = new RenderTargetBitmap(
+                        baseImage.PixelWidth,
+                        baseImage.PixelHeight,
+                        96, 96,
+                        PixelFormats.Pbgra32);
+
+                    renderBitmap.Render(drawingVisual);
+
+                    // Save with PNG encoder
+                    using (FileStream stream = File.Create(outputPath))
+                    {
+                        PngBitmapEncoder encoder = new PngBitmapEncoder();
+                        encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+                        encoder.Save(stream);
+                        stream.Flush();
+                    }
+
+                    Debug.WriteLine($"Saved overlay image to: {outputPath}");
+                    return outputPath;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error processing image overlays: {ex.Message}");
+                    Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                    return basePath;
+                }
+            }
+
+            private void ApplyOverlay(DrawingContext drawingContext, string overlayPath, int width, int height)
+            {
+                try
+                {
+                    BitmapImage overlay = new BitmapImage();
+                    overlay.BeginInit();
+                    overlay.CacheOption = BitmapCacheOption.OnLoad;
+                    overlay.UriSource = new Uri(overlayPath);
+                    overlay.EndInit();
+
+                    drawingContext.DrawImage(overlay, new Rect(0, 0, width, height));
+                    Debug.WriteLine($"Successfully applied overlay: {Path.GetFileName(overlayPath)}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error applying overlay {overlayPath}: {ex.Message}");
+                }
+            }
+        }
+
         private void LoadPage(int pageIndex)
         {
             if (pageIndex < 0 )
@@ -147,10 +277,42 @@ namespace SQLiteViewer
 
             DataGridView.ItemsSource = _pagedData;
             _currentPageIndex = pageIndex;
-
-            // Update the page number display
             PageNumberTextBox.Text = (_currentPageIndex + 1).ToString();
         }
+
+        // Helper method to apply specific overlays based on conditions
+        private void ApplyOverlay(DrawingContext dc, string condition, string overlay1, string overlay2, BitmapImage baseImage)
+        {
+            if (condition == "1")
+                DrawOverlay(dc, overlay1, baseImage);
+            else if (condition == "2")
+                DrawOverlay(dc, overlay2, baseImage);
+        }
+
+        // Draws the overlay image at the top-left corner
+        private void DrawOverlay(DrawingContext dc, string overlayFileName, BitmapImage baseImage)
+        {
+            string overlayPath = Path.Combine(Environment.CurrentDirectory, "Overlays", overlayFileName);
+            if (File.Exists(overlayPath))
+            {
+                BitmapImage overlayImage = new BitmapImage(new Uri(overlayPath));
+                dc.DrawImage(overlayImage, new Rect(0, 0, baseImage.Width, baseImage.Height));  // Draw overlay
+            }
+        }
+
+        // Method to save the final image to a file
+        private void SaveBitmap(RenderTargetBitmap bitmap, string filePath)
+        {
+            // Use a memory stream to avoid file locking issues
+            using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                BitmapEncoder encoder = new PngBitmapEncoder(); // You can use any encoder (PNG, JPEG, etc.)
+                encoder.Frames.Add(BitmapFrame.Create(bitmap));
+                encoder.Save(stream);
+            }
+        }
+
+
         // Event handler for "First" button
         private void FirstPage_Click(object sender, RoutedEventArgs e)
         {
