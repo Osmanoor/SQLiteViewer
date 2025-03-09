@@ -29,13 +29,13 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                     rowCount = Convert.ToInt32(command.ExecuteScalar());
                 }
             }
-
             return rowCount;
         }
         public (ObservableCollection<AA_BetterReplays>,int) FilterAndPaginateBetterReplays(
             string teammate, string playlist,
             string orderBy, bool ascending, int pageNumber, int pageSize)
         {
+            var betterreplaycommand = "PRAGMA cache_size = -1000000; PRAGMA synchronous = OFF; SELECT \r\n    R.\"fileName\", \r\n    R.\"replayDate\", \r\n    R.\"playlist\",\r\n\trt.teammates,\r\n    R.\"gameTime\", \r\n    R.\"season\", \r\n    COUNT(CASE WHEN ro.\"isBot\" > 0 THEN 1 END) AS \"botCount\",\r\n    SUM(CASE WHEN ro.\"replayPlayer\" > 0 THEN ro.\"kills\" ELSE 0 END) AS \"Kills\",\r\n    BK.bot_kills AS BotKills, -- Joining the bot_kills column from BotKills view\r\n    MAX(CASE WHEN ro.\"replayPlayer\" > 0 THEN ro.\"placement\" END) AS \"Placement\",\r\n    (SELECT POI\r\n     FROM BetterKillfeed\r\n     WHERE BetterKillfeed.fileName = R.fileName\r\n       AND POI IS NOT NULL\r\n     ORDER BY '#' DESC\r\n     LIMIT 1) AS \"Ended\" \r\nFROM \r\n    \"Replays\" R\r\nLEFT JOIN \r\n    \"Roster\" ro ON R.\"fileName\" = ro.\"fileName\"\r\nLEFT JOIN \r\n    BotKills BK ON R.\"fileName\" = BK.\"fileName\" AND BK.replayPlayer > 0\r\nLEFT JOIN\r\n    rTeammates rt ON R.\"fileName\" = rt.\"fileName\"\r\nWHERECommandC# \r\nGROUP BY \r\n    R.\"fileName\", R.\"replayDate\", R.\"playlist\", R.\"gameTime\", R.\"season\", rt.teammates";
             var total_rows = 0;
             var replays = new ObservableCollection<AA_BetterReplays>();
             using (var connection = new SqliteConnection(connectionString))
@@ -44,8 +44,7 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 var command = connection.CreateCommand();
 
                 // Base query
-                command.CommandText = "PRAGMA cache_size = -1000000; PRAGMA synchronous = OFF; SELECT * FROM AA_BetterReplays WHERE 1 = 1";
-
+                command.CommandText = "WHERE 1 = 1";
                 // Add filters dynamically
                 if (!string.IsNullOrEmpty(teammate))
                 {
@@ -59,13 +58,10 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 }
 
 
-                // Sorting
-                if (!string.IsNullOrEmpty(orderBy))
-                {
-                    command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
-                }
+                
                 var command2 = connection.CreateCommand();
-                command2.CommandText = command.CommandText.Replace("*", "COUNT(*)");
+                command2.CommandText = betterreplaycommand.Replace("WHERECommandC#", command.CommandText);
+                command2.CommandText = command2.CommandText.Replace("    R.\"fileName\", \r\n    R.\"replayDate\", \r\n    R.\"playlist\",\r\n\trt.teammates,\r\n    R.\"gameTime\", \r\n    R.\"season\", \r\n    COUNT(CASE WHEN ro.\"isBot\" > 0 THEN 1 END) AS \"botCount\",\r\n    SUM(CASE WHEN ro.\"replayPlayer\" > 0 THEN ro.\"kills\" ELSE 0 END) AS \"Kills\",\r\n    BK.bot_kills AS BotKills, -- Joining the bot_kills column from BotKills view\r\n    MAX(CASE WHEN ro.\"replayPlayer\" > 0 THEN ro.\"placement\" END) AS \"Placement\",\r\n    (SELECT POI\r\n     FROM BetterKillfeed\r\n     WHERE BetterKillfeed.fileName = R.fileName\r\n       AND POI IS NOT NULL\r\n     ORDER BY '#' DESC\r\n     LIMIT 1) AS \"Ended\" ", "COUNT(*)");
                 command2.CommandType = command.CommandType;
                 command2.Transaction = command.Transaction;
                 foreach (SqliteParameter parameter in command.Parameters)
@@ -87,11 +83,26 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 {
                     total_rows = int.Parse(resutl.ToString());
                 }
-                
+
+                // Sorting
+                if (!string.IsNullOrEmpty(orderBy))
+                {
+
+                    //command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
+                    if (orderBy== "FileName")
+                    {
+                        orderBy = "R.FileName";
+                    }
+                    betterreplaycommand += $"\r\nORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
+
+                }
+
                 // Pagination
-                command.CommandText += " LIMIT @pageSize OFFSET @offset";
+                //command.CommandText += " LIMIT @pageSize OFFSET @offset";
+                betterreplaycommand += "\r\nLIMIT @pageSize OFFSET @offset";
                 command.Parameters.AddWithValue("@pageSize", pageSize);
                 command.Parameters.AddWithValue("@offset", (pageNumber) * pageSize);
+                command.CommandText = betterreplaycommand.Replace("WHERECommandC#", command.CommandText);
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -231,7 +242,7 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
             string fileName, DateTime? replayDate, string displayName, string isBot, string isTeam, string isAnon,
             string orderBy, bool ascending, int pageNumber, int pageSize)
         {
-            string roastercommand = "SELECT \r\n    RV.item_number AS Num,  -- Adding the item_number column from the zReplayView\r\n    A.replayDate AS Date, \r\n    A.playlist,\r\n    LR.playerId,\r\n    LR.displayName,\r\n    LR.level AS Lvl,\r\n    LR.placement AS Place, \r\n    LR.anonymous AS Anon,\r\n    LR.platform,\r\n    LR.teamIndex AS Team,\r\n    LR.kills AS Kills,\r\n    BK.bot_kills AS BotKills,\r\n    LR.crowns,\r\n    COALESCE(\r\n        (\r\n            SELECT displayName\r\n            FROM (\r\n                SELECT \r\n                    displayName,\r\n                    ROW_NUMBER() OVER (PARTITION BY LR.fileName, LR.teamIndex ORDER BY placement DESC) AS rn\r\n                FROM Roster\r\n                WHERE LR.fileName = fileName\r\n                  AND LR.teamIndex = teamIndex\r\n                  AND displayName <> LR.displayName\r\n            ) AS Subquery\r\n            WHERE rn = 1\r\n        ), 'No Teammate'\r\n    ) AS TeamMate,\r\n\tLR.isBot,\r\n    LR.skin, \r\n    (\r\n        SELECT COUNT(*)\r\n        FROM Roster\r\n        WHERE \r\n            playerId = LR.playerId \r\n            AND isBot < 1\r\n    ) AS Count,\r\n    \r\n    SUM(\r\n        CASE \r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actionerId AND tm.fileName = kf.fileName\r\n                WHERE kf.actioneeId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer = 1\r\n            ) THEN 1\r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actionerId AND tm.fileName = kf.fileName\r\n                WHERE kf.actioneeId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer != 1\r\n            ) THEN 2\r\n            ELSE 0\r\n        END\r\n    ) AS MetK,\r\n    \r\n    SUM(\r\n        CASE \r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actioneeId AND tm.fileName = kf.fileName\r\n                WHERE kf.actionerId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer = 1\r\n            ) THEN 1\r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actioneeId AND tm.fileName = kf.fileName\r\n                WHERE kf.actionerId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer != 1\r\n            ) THEN 2\r\n            ELSE 0\r\n        END\r\n    ) AS MetD,\r\n    \r\n    -- Adding the new is_team column\r\n    CASE\r\n        WHEN EXISTS (\r\n            SELECT 1\r\n            FROM Teammates tm\r\n            WHERE tm.playerId = LR.playerId\r\n              AND tm.fileName = LR.fileName\r\n        ) THEN 1\r\n        ELSE 0\r\n    END AS isTeam,\r\n    \r\n    A.season,\r\n    LR.fileName AS fileName\r\nFROM \r\n    Roster LR\r\nJOIN \r\n    Replays A ON LR.fileName = A.fileName\r\nLEFT JOIN \r\n    BotKills BK ON LR.fileName = BK.fileName AND LR.playerId = BK.actionerId\r\nJOIN \r\n    zReplayView RV ON LR.fileName = RV.fileName\r\n WHERECommandC# \r\nGROUP BY \r\n    A.replayDate, A.playlist, LR.displayName, LR.kills, LR.level, LR.placement, LR.anonymous, LR.teamIndex, LR.isBot, LR.crowns, LR.skin, RV.item_number";
+            string roastercommand = "PRAGMA cache_size = -1000000; PRAGMA synchronous = OFF; SELECT \r\n    RV.item_number AS Num,  -- Adding the item_number column from the zReplayView\r\n    A.replayDate AS Date, \r\n    A.playlist,\r\n    LR.playerId,\r\n    LR.displayName,\r\n    LR.level AS Lvl,\r\n    LR.placement AS Place, \r\n    LR.anonymous AS Anon,\r\n    LR.platform,\r\n    LR.teamIndex AS Team,\r\n    LR.kills AS Kills,\r\n    BK.bot_kills AS BotKills,\r\n    LR.crowns,\r\n    COALESCE(\r\n        (\r\n            SELECT displayName\r\n            FROM (\r\n                SELECT \r\n                    displayName,\r\n                    ROW_NUMBER() OVER (PARTITION BY LR.fileName, LR.teamIndex ORDER BY placement DESC) AS rn\r\n                FROM Roster\r\n                WHERE LR.fileName = fileName\r\n                  AND LR.teamIndex = teamIndex\r\n                  AND displayName <> LR.displayName\r\n            ) AS Subquery\r\n            WHERE rn = 1\r\n        ), 'No Teammate'\r\n    ) AS TeamMate,\r\n\tLR.isBot,\r\n    LR.skin, \r\n    (\r\n        SELECT COUNT(*)\r\n        FROM Roster\r\n        WHERE \r\n            playerId = LR.playerId \r\n            AND isBot < 1\r\n    ) AS Count,\r\n    \r\n    SUM(\r\n        CASE \r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actionerId AND tm.fileName = kf.fileName\r\n                WHERE kf.actioneeId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer = 1\r\n            ) THEN 1\r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actionerId AND tm.fileName = kf.fileName\r\n                WHERE kf.actioneeId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer != 1\r\n            ) THEN 2\r\n            ELSE 0\r\n        END\r\n    ) AS MetK,\r\n    \r\n    SUM(\r\n        CASE \r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actioneeId AND tm.fileName = kf.fileName\r\n                WHERE kf.actionerId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer = 1\r\n            ) THEN 1\r\n            WHEN EXISTS (\r\n                SELECT 1\r\n                FROM Killfeed kf\r\n                JOIN Teammates tm ON tm.playerId = kf.actioneeId AND tm.fileName = kf.fileName\r\n                WHERE kf.actionerId = LR.playerId\r\n                  AND kf.fileName = LR.fileName\r\n                  AND tm.replayPlayer != 1\r\n            ) THEN 2\r\n            ELSE 0\r\n        END\r\n    ) AS MetD,\r\n    \r\n    -- Adding the new is_team column\r\n    CASE\r\n        WHEN EXISTS (\r\n            SELECT 1\r\n            FROM Teammates tm\r\n            WHERE tm.playerId = LR.playerId\r\n              AND tm.fileName = LR.fileName\r\n        ) THEN 1\r\n        ELSE 0\r\n    END AS isTeam,\r\n    \r\n    A.season,\r\n    LR.fileName AS fileName\r\nFROM \r\n    Roster LR\r\nJOIN \r\n    Replays A ON LR.fileName = A.fileName\r\nLEFT JOIN \r\n    BotKills BK ON LR.fileName = BK.fileName AND LR.playerId = BK.actionerId\r\nJOIN \r\n    zReplayView RV ON LR.fileName = RV.fileName\r\n WHERECommandC# \r\nGROUP BY \r\n    A.replayDate, A.playlist, LR.displayName, LR.kills, LR.level, LR.placement, LR.anonymous, LR.teamIndex, LR.isBot, LR.crowns, LR.skin, RV.item_number";
             var total_rows = 0;
             var replays = new ObservableCollection<A_RosterWithCount>();
             using (var connection = new SqliteConnection(connectionString))
@@ -304,7 +315,12 @@ namespace SQLiteViewer  // Replace with your actual project namespace if differe
                 // Sorting
                 if (!string.IsNullOrEmpty(orderBy))
                 {
-                    command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
+                    //command.CommandText += $" ORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
+                    if (orderBy == "FileName")
+                    {
+                        orderBy = "LR.FileName";
+                    }
+                    roastercommand += $"\r\nORDER BY {orderBy} {(ascending ? "ASC" : "DESC")}";
                 }
                 // Pagination
                 //command.CommandText += " LIMIT @pageSize OFFSET @offset";

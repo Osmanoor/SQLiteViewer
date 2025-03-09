@@ -56,7 +56,7 @@ namespace SQLiteViewer
             _pagedDataCollection = new ObservableCollection<AA_BetterReplays>();
 
             // Calculate total pages
-            _totalPages = ((dbManager.GetRowCount("AA_BetterReplays") + _pageSize - 1) / _pageSize);  // Rounded up division
+            _totalPages = ((10 + _pageSize - 1) / _pageSize);  // Rounded up division
 
             // Display the first page
             LoadPage(0);
